@@ -1,177 +1,101 @@
-# GAIK - General AI Kit
+# Toolkit Shared Components
 
-A monorepo toolkit for sharing and reusing code across Python and TypeScript projects.
+One place where we share Python and TypeScript components for every team project.
 
-## Purpose
+## Why not copy/paste?
 
-GAIK enables you to:
+- Single source of truth: bug fixes and improvements land once and flow to every project.
+- Versioned releases: each project can pin or upgrade confidently.
+- Easier maintenance: imports, docs, and tests travel together.
+- Ready-to-install packages: no manual syncing or cherry-picking.
 
-- **Share code** between multiple projects without copy-pasting
-- **Reuse utilities** across different codebases by installing directly from GitHub
-- **Maintain consistency** with centralized, versioned components
-- **Iterate quickly** by updating shared code in one place
-- **Publish later** to PyPI/npm when components are mature enough
+## Quick Start Checklist
 
-## Components
+**1. Plan the component**
 
-- **gaik-py**: Python library with modular namespace structure
-- **gaik-ts**: TypeScript/ESM library with subpath exports
-- **gaik-demo**: Docker environment where all components are available for testing
+- Pick `gaik-py` (Python) or `gaik-ts` (TypeScript).
+- Add code, tests, and short docs in the same package.
 
-Both libraries support modular imports - use only what you need.
+**2. Test locally**
 
-## Installation
+- Python: `cd gaik-py && pip install -r requirements.txt && pip install -e ".[dev]" && pytest`
+- TypeScript: `cd gaik-ts && pnpm install && pnpm test`
+- Optional: run `gaik-demo` to try both packages inside Docker.
 
-### Python (gaik-py)
+**3. Bump the version**
 
-Install directly from GitHub:
+- Python: update `pyproject.toml` / `gaik/__init__.py`.
+- TypeScript: update `package.json`.
+
+**4. Tag the release**
+
+- Create `git tag v0.2.0` (or the next version) and push it.
+- Publish a GitHub Release based on the tag; see GitHub’s release guide [[1]](#references).
+
+**5. Install in projects**
+
+- Python: `pip install "git+https://github.com/GAIK-project/toolkit-shared-components.git@v0.2.0#subdirectory=gaik-py"`
+- TypeScript: `pnpm add github:GAIK-project/toolkit-shared-components#v0.2.0 --filter gaik-ts`
+
+## Repository Contents
+
+- `gaik-py`: shared Python components and tests
+- `gaik-ts`: shared TypeScript components and tests
+- `gaik-demo`: Docker app with both packages preinstalled for demos
+
+## Release Cheat Sheet
+
+1. Make sure `main` is up to date and tests pass.
+2. Update the version files.
+3. `git commit` and `git tag vX.Y.Z`.
+4. `git push origin main --tags`.
+5. Open GitHub `Releases`, pick the tag, and add highlights.
+
+GitHub automatically provides zip/tarball downloads and supports attaching binaries to the release [[1]](#references).
+
+## Using Components in Projects
+
+- Keep dependencies pinned in `requirements.txt` / `package.json`.
+- When a new release drops, bump the version and review the release notes.
+- Fixes should land here first, then propagate via version bumps.
+
+## Example: Python Whisper Transcription Component
+
+1. Install the shared package (pin the release that contains Whisper helpers):
 
 ```bash
-pip install "git+https://github.com/ORG/gaik-py.git@v0.1.0"
+pip install "git+https://github.com/GAIK-project/toolkit-shared-components.git@v0.2.0#subdirectory=gaik-py"
 ```
 
-Install with optional dependencies:
-
-```bash
-pip install "git+https://github.com/ORG/gaik-py.git@v0.1.0#egg=gaik[pdf,html]"
-```
-
-Available extras:
-
-- `pdf`: PDF parsing support (pypdf>=4)
-- `html`: HTML parsing support (beautifulsoup4>=4.12, lxml>=5)
-- `dev`: Development tools (pytest, ruff, mypy, build, twine)
-
-**Requirements:** Python >=3.9
-
-### TypeScript (gaik-ts)
-
-Install directly from GitHub:
-
-```bash
-pnpm add github:ORG/gaik-ts#v0.1.0
-```
-
-Or with npm/yarn:
-
-```bash
-npm install github:ORG/gaik-ts#v0.1.0
-yarn add github:ORG/gaik-ts#v0.1.0
-```
-
-**Requirements:** Node.js >=18
-
-## Usage
-
-### Python
+2. Add the shared helper in `gaik-py/src/gaik/audio/whisper.py` (dependency pinned in `gaik-py/requirements.txt`):
 
 ```python
-# Import from namespace packages
-from gaik.parser import your_parser_function
-from gaik.logger import your_logger_function
+from functools import lru_cache
+from pathlib import Path
+
+import whisper
+
+
+@lru_cache(maxsize=1)
+def _load_model(model_name: str = "base") -> whisper.Whisper:
+    return whisper.load_model(model_name)
+
+
+def transcribe_audio(audio_path: str | Path, model_name: str | None = None) -> str:
+    audio_path = Path(audio_path)
+    model = _load_model(model_name or "base")
+    result = model.transcribe(str(audio_path))
+    return result["text"].strip()
 ```
 
-### TypeScript
+3. Consume it in any project:
 
-```typescript
-// Import from main entry or subpaths
-import { parser } from "gaik-ts";
-import { yourFunction } from "gaik-ts/parser";
+```python
+from gaik.audio.whisper import transcribe_audio
+
+print(transcribe_audio("samples/meeting.wav"))
 ```
 
-## Demo Application
+## References
 
-The Docker demo provides an environment where both libraries are pre-installed and ready to use:
-
-```bash
-cd gaik-demo
-docker-compose up
-```
-
-Use this to test your shared code before deploying to other projects.
-
-## Project Structure
-
-```
-gaik-toolkit/
-├── gaik-py/           # Python library
-│   └── src/gaik/
-│       ├── parser/    # Parser modules
-│       └── logger/    # Logger modules
-├── gaik-ts/           # TypeScript library
-│   ├── src/
-│   │   ├── parser/    # Parser modules
-│   │   └── logger/    # Logger modules
-│   └── dist/          # Compiled output
-└── gaik-demo/         # Docker demo application
-```
-
-## Workflow
-
-1. **Develop**: Add reusable code to gaik-py or gaik-ts
-2. **Test**: Use gaik-demo to verify functionality
-3. **Share**: Install in other projects directly from GitHub
-4. **Version**: Tag releases for stable snapshots
-5. **Publish**: When ready, publish to PyPI/npm for wider distribution
-
-## Benefits
-
-- **No copy-paste**: Single source of truth for shared utilities
-- **Version control**: Pin to specific versions or use latest
-- **Modular**: Import only what you need with optional dependencies
-- **Type-safe**: Full TypeScript and Python type support
-- **Flexible**: Use from GitHub now, publish to registries later
-
-## Development
-
-### Python Development
-
-```bash
-cd gaik-py
-pip install -e ".[dev]"
-pytest
-ruff check .
-mypy src/
-```
-
-### TypeScript Development
-
-```bash
-cd gaik-ts
-pnpm install
-pnpm build
-pnpm test
-```
-
-## Publishing (Future)
-
-### PyPI
-
-```bash
-cd gaik-py
-python -m build
-twine upload dist/*
-```
-
-### npm
-
-```bash
-cd gaik-ts
-pnpm publish
-```
-
-## License
-
-MIT
-
-## Documentation
-
-For detailed specifications and user stories, see:
-
-- [Requirements & User Stories](.kiro/specs/gaik-monorepo/requirements.md)
-- [Design Document](.kiro/specs/gaik-monorepo/design.md)
-- [Implementation Tasks](.kiro/specs/gaik-monorepo/tasks.md)
-
-## Version
-
-Current version: 0.1.0
+1. <a name="references"></a>GitHub Docs: About releases. https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
