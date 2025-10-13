@@ -9,35 +9,17 @@ One place where we share Python and TypeScript components for every team project
 - Easier maintenance: imports, docs, and tests travel together.
 - Ready-to-install packages: no manual syncing or cherry-picking.
 
-## Quick Start Checklist
-
-**1. Plan the component**
-
-- Pick `gaik-py` (Python) or `gaik-ts` (TypeScript).
-- Add code, tests, and short docs in the same package.
-
-**2. Test locally**
-
-- Python: `cd gaik-py && pip install -r requirements.txt && pip install -e ".[dev]" && pytest`
-- TypeScript: `cd gaik-ts && pnpm install && pnpm test`
-- Optional: run `gaik-demo` to try both packages inside Docker.
-
-**3. Bump the version**
-
-- Python: update `pyproject.toml` / `gaik/__init__.py`.
-- TypeScript: update `package.json`.
-
-**4. Tag the release**
-
-- Create `git tag v0.2.0` (or the next version) and push it.
-- Publish a GitHub Release based on the tag; see GitHub’s release guide [[1]](#references).
-
-**5. Install in projects**
+## Install packages
 
 - Python: `pip install "git+https://github.com/GAIK-project/toolkit-shared-components.git#subdirectory=gaik-py"`
 - TypeScript: `pnpm add github:GAIK-project/toolkit-shared-components`
 
-**Pin specific version:** Add `@v0.2.0` before `#subdirectory` for Python or after the repo name for TypeScript.
+Use `@v0.2.0` to pin a specific version (e.g. `pip install git+…@v0.2.0#subdirectory=gaik-py`).
+
+## Need to publish a component?
+
+- Follow the step-by-step deployment guide in `deployment.md`.
+- TL;DR: add your component, run tests, bump the version, tag a release, and update release notes.
 
 ## Repository Contents
 
