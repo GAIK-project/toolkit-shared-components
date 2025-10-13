@@ -34,8 +34,10 @@ One place where we share Python and TypeScript components for every team project
 
 **5. Install in projects**
 
-- Python: `pip install "git+https://github.com/GAIK-project/toolkit-shared-components.git@v0.2.0#subdirectory=gaik-py"`
-- TypeScript: `pnpm add github:GAIK-project/toolkit-shared-components#v0.2.0 --filter gaik-ts`
+- Python: `pip install "git+https://github.com/GAIK-project/toolkit-shared-components.git#subdirectory=gaik-py"`
+- TypeScript: `pnpm add github:GAIK-project/toolkit-shared-components`
+
+**Pin specific version:** Add `@v0.2.0` before `#subdirectory` for Python or after the repo name for TypeScript.
 
 ## Repository Contents
 
@@ -61,10 +63,10 @@ GitHub automatically provides zip/tarball downloads and supports attaching binar
 
 ## Example: Python Whisper Transcription Component
 
-1. Install the shared package (pin the release that contains Whisper helpers):
+1. Install the shared package:
 
 ```bash
-pip install "git+https://github.com/GAIK-project/toolkit-shared-components.git@v0.2.0#subdirectory=gaik-py"
+pip install "git+https://github.com/GAIK-project/toolkit-shared-components.git#subdirectory=gaik-py"
 ```
 
 2. Add the shared helper in `gaik-py/src/gaik/audio/whisper.py` (dependency pinned in `gaik-py/requirements.txt`):
