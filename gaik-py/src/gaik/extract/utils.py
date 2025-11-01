@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel, Field, create_model
 
 if TYPE_CHECKING:
-    from gaik.schema.models import ExtractionRequirements
+    from gaik.extract.models import ExtractionRequirements
 
 
 def sanitize_model_name(name: str) -> str:
@@ -53,7 +53,7 @@ def create_extraction_model(requirements: ExtractionRequirements) -> type[BaseMo
         A dynamically created Pydantic model class
 
     Example:
-        >>> from gaik.schema.models import ExtractionRequirements, FieldSpec
+        >>> from gaik.extract.models import ExtractionRequirements, FieldSpec
         >>> requirements = ExtractionRequirements(
         ...     use_case_name="Invoice",
         ...     fields=[
@@ -71,8 +71,8 @@ def create_extraction_model(requirements: ExtractionRequirements) -> type[BaseMo
         ...         )
         ...     ]
         ... )
-        >>> InvoiceModel = create_extraction_model(requirements)
-        >>> InvoiceModel.__name__
+        >>> invoice_model = create_extraction_model(requirements)
+        >>> invoice_model.__name__
         'Invoice_Extraction'
     """
     # Map string type names to actual Python types
@@ -107,13 +107,13 @@ def create_extraction_model(requirements: ExtractionRequirements) -> type[BaseMo
     model_name = sanitize_model_name(requirements.use_case_name) + "_Extraction"
 
     # Create the model dynamically using Pydantic's built-in method
-    DynamicModel = create_model(
+    dynamic_model = create_model(
         model_name,
         __doc__=f"Extraction model for {requirements.use_case_name}",
         **field_definitions,
     )
 
-    return DynamicModel
+    return dynamic_model
 
 
 __all__ = ["sanitize_model_name", "create_extraction_model"]

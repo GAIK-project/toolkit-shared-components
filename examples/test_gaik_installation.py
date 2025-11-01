@@ -3,7 +3,7 @@
 This script tests the basic functionality without making actual API calls.
 """
 
-from gaik.schema import (
+from gaik.extract import (
     SchemaExtractor,
     FieldSpec,
     ExtractionRequirements,
@@ -153,7 +153,7 @@ def main():
     print("\nThe gaik package is working correctly from Test PyPI.")
     print("\nTo test actual extraction (requires OpenAI API key):")
     print("  export OPENAI_API_KEY='your-key'")
-    print("  python -c \"from gaik.schema import SchemaExtractor; ...")
+    print("  python -c \"from gaik.extract import SchemaExtractor; ...")
     print("\nInstallation command:")
     print("  pip install -i https://test.pypi.org/simple/ \\")
     print("              --extra-index-url https://pypi.org/simple/ gaik")

@@ -1,4 +1,4 @@
-"""Dynamic schema extraction with OpenAI structured outputs.
+"""Dynamic data extraction with OpenAI structured outputs.
 
 This module provides tools for extracting structured data from unstructured text
 using dynamically created Pydantic schemas and OpenAI's structured outputs API.
@@ -11,7 +11,7 @@ Benefits of this approach:
 - Reliable results with automatic retries
 
 Quick Start:
-    >>> from gaik.schema import dynamic_extraction_workflow
+    >>> from gaik.extract import dynamic_extraction_workflow
     >>>
     >>> results = dynamic_extraction_workflow(
     ...     user_description="Extract title, date, and author from articles",
@@ -19,15 +19,19 @@ Quick Start:
     ... )
 
 Advanced Usage:
-    >>> from gaik.schema import SchemaExtractor
+    >>> from gaik.extract import SchemaExtractor
     >>>
     >>> # Reuse the same schema for multiple batches
     >>> extractor = SchemaExtractor("Extract invoice number and amount")
     >>> batch1 = extractor.extract(documents1)
     >>> batch2 = extractor.extract(documents2)
+    >>>
+    >>> # Access the generated Pydantic model
+    >>> schema = extractor.model.model_json_schema()
+    >>> print(schema)
 
 Custom Field Specifications:
-    >>> from gaik.schema import (
+    >>> from gaik.extract import (
     ...     FieldSpec,
     ...     ExtractionRequirements,
     ...     create_extraction_model,
@@ -48,9 +52,9 @@ Custom Field Specifications:
     >>> model = create_extraction_model(requirements)
 """
 
-from gaik.schema.extractor import SchemaExtractor, dynamic_extraction_workflow
-from gaik.schema.models import ExtractionRequirements, FieldSpec
-from gaik.schema.utils import create_extraction_model, sanitize_model_name
+from gaik.extract.extractor import SchemaExtractor, dynamic_extraction_workflow
+from gaik.extract.models import ExtractionRequirements, FieldSpec
+from gaik.extract.utils import create_extraction_model, sanitize_model_name
 
 __all__ = [
     # Main API

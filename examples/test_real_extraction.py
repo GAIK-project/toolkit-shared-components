@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-from gaik.schema import SchemaExtractor, dynamic_extraction_workflow
+from gaik.extract import SchemaExtractor, dynamic_extraction_workflow
 
 
 def test_simple_extraction():

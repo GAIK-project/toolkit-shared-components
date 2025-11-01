@@ -6,17 +6,16 @@ using dynamically created Pydantic schemas and OpenAI's structured outputs.
 
 from __future__ import annotations
 
-import os
 from typing import TYPE_CHECKING
 
 from openai import OpenAI, OpenAIError
 from pydantic import BaseModel
 
-from gaik.schema.models import ExtractionRequirements
-from gaik.schema.utils import create_extraction_model
+from gaik.extract.models import ExtractionRequirements
+from gaik.extract.utils import create_extraction_model
 
 if TYPE_CHECKING:
-    from gaik.schema.models import FieldSpec
+    from gaik.extract.models import FieldSpec
 
 
 def _get_openai_client(client: OpenAI | None = None) -> OpenAI:

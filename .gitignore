@@ -38,5 +38,5 @@ Thumbs.db
 .venv
 venv/
 ¨
-
 .claude*
+.ruff_cache/
