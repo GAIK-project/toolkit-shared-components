@@ -1,223 +1,179 @@
-# Publishing to PyPI - Cheat Sheet
+# Production PyPI Publishing Guide
 
-## Current Status
-
-- ✅ **Test PyPI**: Published and working
-- ⏳ **Production PyPI**: Not yet published
+Quick reference for publishing to production PyPI when ready to move from Test PyPI.
 
 ---
 
-## Publishing to Production PyPI
+## 🚀 One-Time Setup
 
-### Prerequisites
+### 1. Create PyPI Account & Token
 
-1. **PyPI Account**: Create account at https://pypi.org/account/register/
-2. **API Token**: Generate at https://pypi.org/manage/account/token/
-3. **GitHub Secret**: Add token as `PYPI_API_TOKEN` in repository secrets
+1. Register: <https://pypi.org/account/register/>
+2. Generate API token: <https://pypi.org/manage/account/token/>
+3. Add to GitHub: Settings → Secrets → Actions → New secret
+   - Name: `PYPI_API_TOKEN`
+   - Value: `pypi-...` (your token)
 
----
+### 2. Create Production Workflow
 
-### Step 1: Update Version
-
-Edit **two files**:
-
-```bash
-# 1. gaik-py/pyproject.toml
-version = "0.2.0"  # Bump version
-
-# 2. gaik-py/src/gaik/__init__.py
-__version__ = "0.2.0"  # Must match pyproject.toml
-```
-
-**Version numbering:**
-- `0.x.0` - New features
-- `0.1.x` - Bug fixes
-- `1.0.0` - Stable release
-
----
-
-### Step 2: Update GitHub Actions Workflow
-
-Edit `.github/workflows/release-pypi.yml` (create if not exists):
+Create `.github/workflows/release-pypi.yml`:
 
 ```yaml
-name: Publish to PyPI
+name: Publish to Production PyPI
 
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 jobs:
-  build-and-publish:
+  publish:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
 
-    - name: Install build tools
-      run: pip install build twine
+      - name: Install tools
+        run: pip install build twine
 
-    - name: Build package
-      working-directory: gaik-py
-      run: python -m build
+      - name: Build
+        working-directory: gaik-py
+        run: python -m build
 
-    - name: Publish to PyPI
-      working-directory: gaik-py
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: |
-        twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
+      - name: Publish to PyPI
+        working-directory: gaik-py
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
 ```
 
 **Key differences from Test PyPI:**
-- URL: `https://upload.pypi.org/legacy/` (not test.pypi.org)
+
+- Repository URL: `https://upload.pypi.org/legacy/` (default, can omit)
 - Secret: `PYPI_API_TOKEN` (not TEST_PYPI_API_TOKEN)
-- No `--skip-existing` (PyPI doesn't allow re-uploads)
+- No `--skip-existing` flag
 
 ---
 
-### Step 3: Test Locally
+## 📦 Publishing New Version
+
+### Quick Steps
 
 ```bash
-cd gaik-py
+# 1. Update version
+# Edit gaik-py/pyproject.toml: version = "0.2.0"
 
-# Clean previous builds
+# 2. Commit and tag
+git add gaik-py/pyproject.toml
+git commit -m "Bump version to 0.2.0"
+git tag v0.2.0
+git push origin main
+git push origin v0.2.0
+
+# 3. GitHub Actions publishes automatically
+# 4. Verify: pip install gaik
+```
+
+### Version Numbering (SemVer)
+
+- **MAJOR.MINOR.PATCH** (e.g., `1.2.3`)
+- `0.x.0` = New features
+- `0.1.x` = Bug fixes
+- `1.0.0` = First stable release
+
+---
+
+## ✅ Pre-Release Checklist
+
+```bash
+# Clean build
+cd gaik-py
 rm -rf dist/ build/ src/*.egg-info/
 
-# Build package
+# Build locally
 python -m build
 
-# Check package integrity
+# Verify package
 twine check dist/*
 
-# Test installation locally
+# Test import
 pip install dist/gaik-*.whl
-python -c "import gaik; print(gaik.__version__)"
+python -c "from gaik.schema import SchemaExtractor; print('OK')"
 ```
 
 ---
 
-### Step 4: Create Git Tag and Push
+## 🔍 Post-Release Verification
+
+1. Check PyPI page: `https://pypi.org/project/gaik/`
+2. Test installation:
 
 ```bash
-# Commit version changes
-git add gaik-py/pyproject.toml gaik-py/src/gaik/__init__.py
-git commit -m "chore: Bump version to 0.2.0"
-git push
+# Clean environment
+pip uninstall gaik -y
 
-# Create and push tag
-git tag v0.2.0
-git push origin v0.2.0
+# Install from PyPI
+pip install gaik
+
+# Verify
+python -c "from gaik.schema import SchemaExtractor; print('Success!')"
 ```
 
-**GitHub Actions will automatically:**
-1. Build the package
-2. Upload to PyPI
-3. Make it available to everyone
+---
+
+## 🐛 Common Issues
+
+| Issue                 | Solution                                   |
+| --------------------- | ------------------------------------------ |
+| "File already exists" | Bump version (PyPI versions are permanent) |
+| "Invalid credentials" | Check `PYPI_API_TOKEN` in GitHub Secrets   |
+| "Package name taken"  | Choose different name in `pyproject.toml`  |
 
 ---
 
-### Step 5: Verify Publication
+## 📋 Manual Publish (Emergency)
 
-1. **Check PyPI**: https://pypi.org/project/gaik/
-2. **Test installation**:
-   ```bash
-   pip install gaik
-   python -c "from gaik.schema import SchemaExtractor; print('Success!')"
-   ```
+If GitHub Actions fails:
 
----
-
-## Manual Publishing (If Needed)
-
-If GitHub Actions fails or you need manual control:
-
-```bash
-cd gaik-py
-
-# Build
+```powershell
+cd .\gaik-py\
 python -m build
-
-# Upload to PyPI
 twine upload dist/*
-# Enter username: __token__
-# Enter password: [your PyPI API token]
+# Username: __token__
+# Password: [your PYPI_API_TOKEN]
 ```
 
 ---
 
-## Common Issues
+## 📝 Release Workflow
 
-### Issue: "File already exists"
-- **Cause**: PyPI doesn't allow re-uploading same version
-- **Fix**: Bump version number and retry
-
-### Issue: "Invalid credentials"
-- **Cause**: Wrong API token or not configured
-- **Fix**: Regenerate token at https://pypi.org/manage/account/token/
-
-### Issue: "Package name already taken"
-- **Cause**: Another package uses the name
-- **Fix**: Choose a different name in `pyproject.toml`
+1. ✅ Update version in `pyproject.toml`
+2. ✅ Test locally
+3. ✅ Commit changes
+4. ✅ Create git tag (`v0.2.0`)
+5. ✅ Push tag to GitHub
+6. ✅ Verify GitHub Actions succeeds
+7. ✅ Test installation from PyPI
+8. ✅ Create GitHub Release (optional)
 
 ---
 
-## Version History Tracking
+## 🔙 Rollback
 
-Keep a `CHANGELOG.md` in `gaik-py/`:
+**Important:** Cannot delete versions from PyPI!
 
-```markdown
-# Changelog
-
-## [0.2.0] - 2024-11-15
-### Added
-- New feature X
-
-### Fixed
-- Bug in Y
-
-## [0.1.1] - 2024-11-01
-### Changed
-- Updated OpenAI API to new format
-```
+- Publish fixed version (e.g., `0.2.1`)
+- Update documentation
+- Mark broken version in release notes
 
 ---
 
-## Release Checklist
+## 📚 Resources
 
-- [ ] Update version in `pyproject.toml`
-- [ ] Update version in `__init__.py`
-- [ ] Update `CHANGELOG.md`
-- [ ] Run tests locally
-- [ ] Build and check package (`python -m build && twine check dist/*`)
-- [ ] Commit changes
-- [ ] Create and push git tag
-- [ ] Verify GitHub Actions succeeds
-- [ ] Test installation from PyPI
-- [ ] Create GitHub Release with notes
-
----
-
-## Rollback
-
-If a bad version is published:
-
-1. **Cannot delete from PyPI** - versions are permanent
-2. **Solution**: Publish a new fixed version (e.g., 0.2.1)
-3. **Communicate**: Update README and CHANGELOG
-
----
-
-## Resources
-
-- **PyPI Help**: https://pypi.org/help/
-- **Packaging Guide**: https://packaging.python.org/
-- **Twine Docs**: https://twine.readthedocs.io/
-- **GitHub Actions**: https://docs.github.com/en/actions
+- [Python Packaging Guide](https://packaging.python.org/)
+- [Twine Documentation](https://twine.readthedocs.io/)
+- [GitHub Actions - Publishing](https://docs.github.com/en/actions/publishing-packages)
