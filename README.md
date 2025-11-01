@@ -20,13 +20,32 @@ pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/
 
 ## 🚀 Quick Start
 
+### Extract Data from Text
+
 ```python
-from gaik.schema import SchemaExtractor
+from gaik.extract import SchemaExtractor
 
 extractor = SchemaExtractor("Extract name and age from text")
-result = extractor.extract_one("Alice is 25 years old")
-print(result)
+results = extractor.extract(["Alice is 25 years old"])
+print(results[0])
 # {'name': 'Alice', 'age': 25}
+```
+
+### Generate Schema Only (No Extraction)
+
+```python
+from gaik.extract import SchemaExtractor
+
+# Create extractor and get the schema
+extractor = SchemaExtractor("Extract invoice number and amount")
+
+# Get JSON Schema (standard format, works with any tool)
+json_schema = extractor.model.model_json_schema()
+print(json_schema)
+# Returns: {"type": "object", "properties": {...}, "required": [...]}
+
+# Or access the Pydantic model directly
+pydantic_model = extractor.model
 ```
 
 **Full documentation:** [gaik-py/README.md](gaik-py/README.md)
@@ -35,7 +54,7 @@ print(result)
 
 ## 🌟 Features
 
-### `gaik.schema` - Dynamic Schema Extraction
+### `gaik.extract` - Dynamic Schema Extraction
 
 Extract structured data from unstructured text using OpenAI's structured outputs:
 
@@ -58,6 +77,7 @@ results = dynamic_extraction_workflow(description, documents)
 ```
 
 **Benefits:**
+
 - ✅ Guaranteed structure (API-enforced)
 - ✅ Type-safe with Pydantic
 - ✅ No code generation or `eval()`
@@ -72,7 +92,7 @@ results = dynamic_extraction_workflow(description, documents)
 toolkit-shared-components/
 ├── gaik-py/              # Python package
 │   ├── src/gaik/
-│   │   └── schema/       # Dynamic schema extraction
+│   │   └── extract/      # Dynamic schema extraction
 │   ├── pyproject.toml
 │   └── README.md
 ├── examples/             # Usage examples
@@ -120,7 +140,7 @@ twine check dist/*
 
 ## ⚠️ Requirements
 
-The `gaik.schema` module requires an OpenAI API key:
+The `gaik.extract` module requires an OpenAI API key:
 
 ```bash
 export OPENAI_API_KEY='sk-...'
