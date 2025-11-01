@@ -1,6 +1,8 @@
 """Test gaik with real OpenAI API calls."""
 
+import json
 import os
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -43,7 +45,7 @@ def test_workflow():
 
     documents = [
         "Invoice #12345 from Acme Corp. Total: 1500 EUR",
-        "INV-67890, Supplier: TechCo Ltd, Amount: 2750.00 euros"
+        "INV-67890, Supplier: TechCo Ltd, Amount: 2750.00 euros",
     ]
 
     results = dynamic_extraction_workflow(description, documents, verbose=True)
@@ -71,7 +73,7 @@ def test_multiple_documents():
     documents = [
         "The SuperWidget costs $29.99 and has a rating of 4.5 stars",
         "MegaTool is priced at $149 with 5-star reviews",
-        "Budget Gadget - only $9.99, rated 3 out of 5"
+        "Budget Gadget - only $9.99, rated 3 out of 5",
     ]
 
     results = extractor.extract(documents)
@@ -79,6 +81,32 @@ def test_multiple_documents():
     print("\nExtracted from 3 product reviews:")
     for i, result in enumerate(results, 1):
         print(f"{i}. {result}")
+
+
+def test_schema_preview():
+    """Show how the extractor schema can be inspected without running extraction."""
+    print("\n" + "=" * 60)
+    print("Schema preview (no extraction)")
+    print("=" * 60)
+
+    extractor = SchemaExtractor(
+        """
+        Extract details from press releases:
+        - Announcement title
+        - Organisation name
+        - Publication date (ISO format)
+        - Key themes (list of strings)
+        """
+    )
+
+    schema = extractor.model.model_json_schema()
+
+    print("Generated JSON Schema:")
+    print(json.dumps(schema, indent=2))
+
+    print("\nField names:")
+    for field in extractor.field_names:
+        print(f"- {field}")
 
 
 if __name__ == "__main__":
@@ -97,6 +125,7 @@ if __name__ == "__main__":
         test_simple_extraction()
         test_workflow()
         test_multiple_documents()
+        test_schema_preview()
 
         print("\n" + "=" * 60)
         print("All tests completed successfully!")
@@ -105,4 +134,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\nERROR: {e}")
         import traceback
+
         traceback.print_exc()
