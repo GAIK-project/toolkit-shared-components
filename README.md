@@ -220,6 +220,7 @@ uv run twine check dist/*
 ```
 
 **Testing checklist:**
+
 - ✅ All imports work
 - ✅ Provider registry contains your new provider
 - ✅ Package builds without errors
@@ -267,30 +268,38 @@ twine check dist/*
 The `gaik.extract` module requires an API key for your chosen provider:
 
 **OpenAI (default):**
+
 ```bash
 export OPENAI_API_KEY='sk-...'
 ```
+
 Get your key: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 
 **Anthropic:**
+
 ```bash
 export ANTHROPIC_API_KEY='sk-ant-...'
 ```
+
 Get your key: [console.anthropic.com](https://console.anthropic.com)
 
 **Google:**
+
 ```bash
 export GOOGLE_API_KEY='...'
 ```
+
 Get your key: [ai.google.dev](https://ai.google.dev)
 
 **Azure OpenAI:**
+
 ```bash
 export AZURE_OPENAI_API_KEY='...'
 export AZURE_OPENAI_ENDPOINT='https://your-resource.openai.azure.com/'
 ```
 
 Alternatively, pass API keys directly to the extractor:
+
 ```python
 extractor = SchemaExtractor(
     "Extract name and age",
