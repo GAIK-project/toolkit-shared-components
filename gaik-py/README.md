@@ -172,15 +172,20 @@ schema = InvoiceModel.model_json_schema()
 
 ```python
 SchemaExtractor(
-    description: str,
+    user_description: str | None = None,  # Optional if requirements provided
     provider: Literal["openai", "anthropic", "google", "azure"] = "openai",
-    model: str | None = None,           # Optional: override default model
-    api_key: str | None = None,         # Optional: override env variable
-    client: BaseChatModel | None = None # Optional: custom LangChain client
+    model: str | None = None,             # Optional: override default model
+    api_key: str | None = None,           # Optional: override env variable
+    client: BaseChatModel | None = None,  # Optional: custom LangChain client
+    requirements: ExtractionRequirements | None = None  # Optional: pre-defined schema
 )
 ```
 
-**Note:** IDEs with type checking (VS Code, PyCharm) will show autocomplete for `provider` parameter.
+**Note:**
+
+- IDEs with type checking (VS Code, PyCharm) will show autocomplete for `provider` parameter
+- Either `user_description` or `requirements` must be provided
+- Using `requirements` skips LLM parsing step (faster & cheaper)
 
 ## Default Models
 
