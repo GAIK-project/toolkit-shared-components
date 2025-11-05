@@ -163,7 +163,7 @@ twine upload dist/*
 5. ✅ Push tag to GitHub
 6. ✅ Verify GitHub Actions succeeds
 7. ✅ Test installation from PyPI
-8. ✅ Create GitHub Release (optional)
+8. ✅ Create GitHub Release (optional - via GitHub UI or `gh release create v0.2.0 --title "Title" --notes "Notes"`)
 
 ---
 

@@ -29,21 +29,25 @@ pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/
 ### 1. Set up your provider API key
 
 **OpenAI (default):**
+
 ```bash
 export OPENAI_API_KEY='sk-...'  # Get from: https://platform.openai.com/api-keys
 ```
 
 **Anthropic:**
+
 ```bash
 export ANTHROPIC_API_KEY='sk-ant-...'  # Get from: https://console.anthropic.com
 ```
 
 **Google:**
+
 ```bash
 export GOOGLE_API_KEY='...'  # Get from: https://ai.google.dev
 ```
 
 **Azure OpenAI:**
+
 ```bash
 export AZURE_OPENAI_API_KEY='...'
 export AZURE_OPENAI_ENDPOINT='https://your-resource.openai.azure.com/'
@@ -156,13 +160,13 @@ schema = InvoiceModel.model_json_schema()
 
 ## API Reference
 
-| Function/Class                  | Purpose                                               |
-| ------------------------------- | ----------------------------------------------------- |
-| `SchemaExtractor`               | Reusable extractor with provider selection            |
-| `dynamic_extraction_workflow()` | One-shot extraction from natural language             |
-| `create_extraction_model()`     | Generate Pydantic model from field specifications     |
-| `FieldSpec`                     | Define a single extraction field                      |
-| `ExtractionRequirements`        | Collection of field specifications                    |
+| Function/Class                  | Purpose                                           |
+| ------------------------------- | ------------------------------------------------- |
+| `SchemaExtractor`               | Reusable extractor with provider selection        |
+| `dynamic_extraction_workflow()` | One-shot extraction from natural language         |
+| `create_extraction_model()`     | Generate Pydantic model from field specifications |
+| `FieldSpec`                     | Define a single extraction field                  |
+| `ExtractionRequirements`        | Collection of field specifications                |
 
 ### Provider Parameters
 
