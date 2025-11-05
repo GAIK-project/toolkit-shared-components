@@ -51,23 +51,18 @@ python examples/03_real_world_use_cases.py
 
 ---
 
-## Learning Examples
-
-Start with these interactive examples to learn GAIK:
+## Examples
 
 ### 🚀 [01_getting_started.py](01_getting_started.py)
 
 **Best for:** First-time users, quick overview
 
 Learn the basics in 5 examples:
-
 - ✅ Basic extraction with natural language descriptions
 - ✅ Batch processing multiple documents
 - ✅ Schema inspection (without API calls)
 - ✅ Switching providers (OpenAI, Anthropic, Google, Azure)
 - ✅ Complex schemas with lists and nested data
-
-**Run:**
 
 ```bash
 python examples/01_getting_started.py
@@ -80,14 +75,11 @@ python examples/01_getting_started.py
 **Best for:** Understanding schemas, integration
 
 Deep dive into Pydantic schemas:
-
 - ✅ Inspect generated Pydantic models
 - ✅ Export to JSON Schema format
 - ✅ Use Pydantic validation features
 - ✅ Work with nested structures
 - ✅ Field introspection
-
-**Run:**
 
 ```bash
 python examples/02_pydantic_schemas.py
@@ -100,7 +92,6 @@ python examples/02_pydantic_schemas.py
 **Best for:** Practical applications, production ideas
 
 Real-world business scenarios:
-
 - 📄 **Invoice Processing** - Automated accounting
 - 💬 **Customer Feedback** - Sentiment analysis
 - 👤 **Resume Parsing** - Recruitment automation
@@ -108,46 +99,28 @@ Real-world business scenarios:
 - 📰 **News Metadata** - Content management
 - 📧 **Email Classification** - Support routing
 
-**Run:**
-
 ```bash
 python examples/03_real_world_use_cases.py
 ```
 
 ---
 
-## Testing & Verification
+### � [demo_anthropic.py](demo_anthropic.py)
 
-### 🧪 [test_gaik_installation.py](test_gaik_installation.py)
+**Best for:** Anthropic Claude provider demo, modular examples
 
-**Purpose:** Verify package installation without API calls
+Simple, modular demonstrations:
+- ✅ Basic extraction with Anthropic
+- ✅ Custom model selection (Claude Opus)
+- ✅ Schema inspection
+- ✅ Custom LangChain client
+- ✅ Batch extraction
+- ✅ Pre-defined requirements (skip LLM parsing)
 
-- ✅ No API key required
-- ✅ Perfect for CI/CD pipelines
-- ✅ Tests core functionality
-- ✅ Validates dynamic model generation
-
-**Run:**
-
-```bash
-python examples/test_gaik_installation.py
-```
-
----
-
-### 🌐 [test_real_extraction.py](test_real_extraction.py)
-
-**Purpose:** Test real API integration across all providers
-
-- ✅ Requires at least one API key
-- ✅ Tests OpenAI, Anthropic, Google, Azure
-- ✅ Validates provider switching
-- ✅ Compares extraction quality
-
-**Run:**
+**Note:** Uses LangChain's `with_structured_output()` under the hood.
 
 ```bash
-python examples/test_real_extraction.py
+python examples/demo_anthropic.py
 ```
 
 ---

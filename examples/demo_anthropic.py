@@ -1,5 +1,8 @@
 """
 GAIK Anthropic Demo - Simple examples you can comment out as needed
+
+This demo uses LangChain's with_structured_output() under the hood.
+It guarantees that LLM responses match your Pydantic schema exactly.
 """
 
 from dotenv import load_dotenv
@@ -17,6 +20,8 @@ def demo_basic():
 
     extractor = SchemaExtractor("Extract name and age from text", provider="anthropic")
 
+    # extract_one() uses LangChain's with_structured_output() internally
+    # Returns guaranteed dict matching the schema
     result = extractor.extract_one("Alice is 25 years old")
     print(f"Result: {result}")
     print(f"Model: {extractor.client.model}")
@@ -92,9 +97,54 @@ def demo_batch():
 
     docs = ["Alice is 25 years old", "Bob is 30, engineer", "Charlie, age 28"]
 
+    # extract() calls with_structured_output() for each document
+    # All results guaranteed to match schema
     results = extractor.extract(docs)
     for i, result in enumerate(results, 1):
         print(f"{i}. {result}")
+
+
+# =============================================================================
+# 6. CUSTOM REQUIREMENTS (Pre-defined schema)
+# =============================================================================
+def demo_custom_requirements():
+    print("\n6. Custom Requirements")
+    print("-" * 40)
+    
+    from gaik.extract import ExtractionRequirements, FieldSpec
+    
+    # Define your own schema instead of natural language
+    # Skips LLM parsing = faster & cheaper
+    requirements = ExtractionRequirements(
+        use_case_name="Invoice",
+        fields=[
+            FieldSpec(
+                field_name="invoice_number",
+                field_type="str",
+                description="Invoice number",
+                required=True,
+            ),
+            FieldSpec(
+                field_name="amount",
+                field_type="float",
+                description="Total amount",
+                required=True,
+            ),
+        ],
+    )
+    
+    # Pass requirements directly - skips LLM parsing step
+    extractor = SchemaExtractor(
+        "not used",  # ignored when requirements provided
+        provider="anthropic",
+        requirements=requirements
+    )
+    
+    print(f"Fields: {extractor.field_names}")
+    
+    # Still uses with_structured_output() for extraction
+    result = extractor.extract_one("Invoice #INV-001, amount: $1,500")
+    print(f"Result: {result}")
 
 
 # =============================================================================
@@ -106,5 +156,6 @@ if __name__ == "__main__":
     demo_schema()
     demo_custom_client()
     demo_batch()
+    demo_custom_requirements()
 
     print("\n✅ Demo complete!")
