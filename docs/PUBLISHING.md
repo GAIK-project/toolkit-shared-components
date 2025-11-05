@@ -64,19 +64,24 @@ jobs:
 ### Quick Steps
 
 ```bash
-# 1. Update version
-# Edit gaik-py/pyproject.toml: version = "0.2.0"
+# 1. Update version in gaik-py/pyproject.toml
+# Edit: version = "0.2.4"
 
-# 2. Commit and tag
+# 2. Commit changes
 git add gaik-py/pyproject.toml
-git commit -m "Bump version to 0.2.0"
-git tag v0.2.0
-git push origin main
-git push origin v0.2.0
+git commit -m "Bump version to 0.2.4"
 
-# 3. GitHub Actions publishes automatically
-# 4. Verify: pip install gaik
+# 3. Validate version match (recommended)
+python gaik-py/tests/validate_version.py v0.2.4
+
+# 4. Create tag and push
+git tag v0.2.4
+git push origin main v0.2.4
+
+# 5. GitHub Actions validates and publishes automatically
 ```
+
+**Note:** GitHub Actions will fail if git tag doesn't match `pyproject.toml` version.
 
 ### Version Numbering (SemVer)
 
