@@ -3,6 +3,25 @@ GAIK Anthropic Demo - Simple examples you can comment out as needed
 
 This demo uses LangChain's with_structured_output() under the hood.
 It guarantees that LLM responses match your Pydantic schema exactly.
+
+SchemaExtractor parameters:
+    user_description: str | None = None
+        Natural language description of what to extract (required if requirements not provided)
+    
+    provider: "openai" | "anthropic" | "google" | "azure" = "openai"
+        LLM provider to use
+    
+    model: str | None = None
+        Model name (uses provider default if not specified)
+    
+    api_key: str | None = None
+        API key (uses environment variable if not specified)
+    
+    client: BaseChatModel | None = None
+        Custom LangChain client (overrides provider/model/api_key)
+    
+    requirements: ExtractionRequirements | None = None
+        Pre-defined schema (skips LLM parsing if provided)
 """
 
 from dotenv import load_dotenv
@@ -134,8 +153,8 @@ def demo_custom_requirements():
     )
     
     # Pass requirements directly - skips LLM parsing step
+    # No user_description needed when requirements provided
     extractor = SchemaExtractor(
-        "not used",  # ignored when requirements provided
         provider="anthropic",
         requirements=requirements
     )

@@ -133,7 +133,7 @@ class SchemaExtractor:
 
     def __init__(
         self,
-        user_description: str,
+        user_description: str | None = None,
         *,
         provider: ProviderType = "openai",
         model: str | None = None,
@@ -146,7 +146,7 @@ class SchemaExtractor:
 
         Args:
             user_description: Natural language description of what to extract.
-                Ignored if requirements is provided.
+                Required if requirements is not provided.
             provider: Provider name (e.g., "openai", "anthropic", "azure", "google").
                 Defaults to "openai".
             model: Model name. If None, uses provider's default model.
@@ -154,8 +154,11 @@ class SchemaExtractor:
             client: Optional custom LangChain chat model. If provided, provider,
                 model, and api_key are ignored.
             requirements: Optional pre-parsed extraction requirements. If provided,
-                user_description is ignored and no parsing happens.
+                user_description is not needed.
             **kwargs: Additional provider-specific parameters.
+
+        Raises:
+            ValueError: If neither user_description nor requirements is provided.
         """
         self.client = _get_llm_client(
             provider=provider,
@@ -167,8 +170,12 @@ class SchemaExtractor:
 
         if requirements is not None:
             self.requirements = requirements
-        else:
+        elif user_description is not None:
             self.requirements = _parse_user_requirements(user_description, self.client)
+        else:
+            raise ValueError(
+                "Either 'user_description' or 'requirements' must be provided"
+            )
 
         self.model = create_extraction_model(self.requirements)
 
