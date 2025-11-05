@@ -169,12 +169,14 @@ schema = InvoiceModel.model_json_schema()
 ```python
 SchemaExtractor(
     description: str,
-    provider: str = "openai",           # "openai", "anthropic", "google", "azure"
+    provider: Literal["openai", "anthropic", "google", "azure"] = "openai",
     model: str | None = None,           # Optional: override default model
     api_key: str | None = None,         # Optional: override env variable
     client: BaseChatModel | None = None # Optional: custom LangChain client
 )
 ```
+
+**Note:** IDEs with type checking (VS Code, PyCharm) will show autocomplete for `provider` parameter.
 
 ## Default Models
 

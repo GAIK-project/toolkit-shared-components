@@ -48,9 +48,7 @@ def get_provider(name: str) -> LLMProvider:
     """
     if name not in PROVIDERS:
         available = ", ".join(PROVIDERS.keys())
-        raise ValueError(
-            f"Unknown provider: '{name}'. Available providers: {available}"
-        )
+        raise ValueError(f"Unknown provider: '{name}'. Available providers: {available}")
     return PROVIDERS[name]
 
 

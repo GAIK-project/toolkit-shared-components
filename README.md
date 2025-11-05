@@ -41,7 +41,7 @@ extractor = SchemaExtractor(
 extractor = SchemaExtractor(
     "Extract name and age from text",
     provider="google",
-    model="gemini-1.5-pro"
+    model="gemini-2.5-flash"
 )
 ```
 

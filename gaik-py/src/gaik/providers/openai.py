@@ -46,8 +46,6 @@ class OpenAIProvider(LLMProvider):
             >>> model = provider.create_chat_model(model="gpt-4o", temperature=0.7)
         """
         model_kwargs = _build_model_kwargs(
-            model=model or self.default_model,
-            api_key=api_key,
-            **kwargs
+            model=model or self.default_model, api_key=api_key, **kwargs
         )
         return ChatOpenAI(**model_kwargs)

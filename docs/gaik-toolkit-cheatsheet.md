@@ -12,8 +12,12 @@
 # Current install from Test PyPI
 pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ gaik
 
+# Or with uv (faster alternative)
+uv pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ gaik
+
 # Future official PyPI release
 # pip install gaik
+# uv pip install gaik
 ```
 
 - Installation works exactly like any other Python package.
@@ -53,6 +57,7 @@ extractor = SchemaExtractor(
 - The library supports multiple LLM providers - choose which one to use by setting the appropriate API key:
 
 **OpenAI (default):**
+
 ```powershell
 # PowerShell
 $Env:OPENAI_API_KEY = "sk-..."
@@ -61,18 +66,21 @@ export OPENAI_API_KEY='sk-...'
 ```
 
 **Anthropic:**
+
 ```powershell
 $Env:ANTHROPIC_API_KEY = "sk-ant-..."
 export ANTHROPIC_API_KEY='sk-ant-...'
 ```
 
 **Google:**
+
 ```powershell
 $Env:GOOGLE_API_KEY = "..."
 export GOOGLE_API_KEY='...'
 ```
 
 **Azure OpenAI:**
+
 ```powershell
 $Env:AZURE_OPENAI_API_KEY = "..."
 $Env:AZURE_OPENAI_ENDPOINT = "https://your-resource.openai.azure.com/"

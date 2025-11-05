@@ -43,11 +43,12 @@ class AnthropicProvider(LLMProvider):
 
         Example:
             >>> provider = AnthropicProvider()
-            >>> model = provider.create_chat_model(model="claude-3-5-sonnet-20241022", temperature=0.7)
+            >>> model = provider.create_chat_model(
+            ...     model="claude-3-5-sonnet-20241022",
+            ...     temperature=0.7
+            ... )
         """
         model_kwargs = _build_model_kwargs(
-            model=model or self.default_model,
-            api_key=api_key,
-            **kwargs
+            model=model or self.default_model, api_key=api_key, **kwargs
         )
         return ChatAnthropic(**model_kwargs)

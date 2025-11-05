@@ -6,7 +6,7 @@ using dynamically created Pydantic schemas and LangChain's structured outputs.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from langchain_core.language_models import BaseChatModel
 from pydantic import BaseModel
@@ -18,9 +18,12 @@ from gaik.providers import get_provider
 if TYPE_CHECKING:
     from gaik.extract.models import FieldSpec
 
+# Type alias for supported providers
+ProviderType = Literal["openai", "anthropic", "google", "azure"]
+
 
 def _get_llm_client(
-    provider: str = "openai",
+    provider: ProviderType = "openai",
     model: str | None = None,
     api_key: str | None = None,
     client: BaseChatModel | None = None,
@@ -66,7 +69,7 @@ def _parse_user_requirements(
     """
     structured_model = llm_client.with_structured_output(ExtractionRequirements)
     response = structured_model.invoke(user_description)
-    return response
+    return cast(ExtractionRequirements, response)
 
 
 def _extract_from_document(
@@ -88,7 +91,8 @@ def _extract_from_document(
     """
     structured_model = llm_client.with_structured_output(extraction_model)
     response = structured_model.invoke(document_text)
-    return response
+    # LangChain's with_structured_output guarantees BaseModel return
+    return cast(BaseModel, response)
 
 
 class SchemaExtractor:
@@ -132,7 +136,7 @@ class SchemaExtractor:
         self,
         user_description: str,
         *,
-        provider: str = "openai",
+        provider: ProviderType = "openai",
         model: str | None = None,
         api_key: str | None = None,
         client: BaseChatModel | None = None,
@@ -211,7 +215,7 @@ def dynamic_extraction_workflow(
     user_description: str,
     documents: list[str],
     *,
-    provider: str = "openai",
+    provider: ProviderType = "openai",
     model: str | None = None,
     api_key: str | None = None,
     client: BaseChatModel | None = None,

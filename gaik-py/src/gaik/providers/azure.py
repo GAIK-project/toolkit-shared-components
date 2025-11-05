@@ -57,8 +57,6 @@ class AzureProvider(LLMProvider):
             ... )
         """
         model_kwargs = _build_model_kwargs(
-            model=model or self.default_model,
-            api_key=api_key,
-            **kwargs
+            model=model or self.default_model, api_key=api_key, **kwargs
         )
         return AzureChatOpenAI(**model_kwargs)

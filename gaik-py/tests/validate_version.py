@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Validate that git tag matches pyproject.toml version before release."""
+
 import re
 import sys
 from pathlib import Path

@@ -17,6 +17,7 @@ Example:
     >>> results = extractor.extract(documents)
     >>>
     >>> # Using Anthropic Claude
+    >>> # IDE autocomplete shows: "openai" | "anthropic" | "google" | "azure"
     >>> extractor = SchemaExtractor(
     ...     "Extract name and age",
     ...     provider="anthropic"

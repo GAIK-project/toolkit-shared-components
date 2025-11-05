@@ -33,21 +33,20 @@ class GoogleProvider(LLMProvider):
         """Create Google chat model instance.
 
         Args:
-            model: Model name (e.g., "gemini-2.5-flash-latest", "gemini-1.5-pro").
+            model: Model name (e.g., "gemini-2.5-flash-latest", "gemini-2.5-flash").
                    Defaults to "gemini-2.5-flash-latest".
             api_key: Google API key. If None, uses GOOGLE_API_KEY environment variable.
-            **kwargs: Additional parameters passed to ChatGoogleGenerativeAI (e.g., temperature, max_tokens).
+            **kwargs: Additional parameters passed to ChatGoogleGenerativeAI
+                (e.g., temperature, max_tokens).
 
         Returns:
             ChatGoogleGenerativeAI: Configured Google chat model
 
         Example:
             >>> provider = GoogleProvider()
-            >>> model = provider.create_chat_model(model="gemini-1.5-pro", temperature=0.7)
+            >>> model = provider.create_chat_model(model="gemini-2.5-flash", temperature=0.7)
         """
         model_kwargs = _build_model_kwargs(
-            model=model or self.default_model,
-            api_key=api_key,
-            **kwargs
+            model=model or self.default_model, api_key=api_key, **kwargs
         )
         return ChatGoogleGenerativeAI(**model_kwargs)
