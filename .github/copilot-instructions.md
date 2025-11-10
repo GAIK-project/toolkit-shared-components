@@ -1,33 +1,54 @@
-**IMPORTANT:** Keep this concise cheat sheet current so agents ship code safely.
+**IMPORTANT:** Concise cheatsheet for AI agents. Keep current.
 
-## Architecture & Conventions
-- Package lives in `gaik-py/src/gaik`
-- Two modules: `providers/` (LLM adapters + registry) and `extract/` (SchemaExtractor API)
-- Providers share `_build_model_kwargs()` helper and must register in `gaik/providers/__init__.py`
-- Default models: OpenAI `gpt-4.1`, Anthropic `claude-sonnet-4-5-20250929`, Google `gemini-2.5-flash`, Azure `gpt-4.1`
-- Never pass `api_key=None`; rely on env vars so LangChain loads keys automatically
+## Package Structure
+- Source: `gaik-py/src/gaik/`
+- Modules: `extract/` (extraction API), `providers/` (LLM registry), `parsers/` (vision/PDF)
+- Published: [pypi.org/project/gaik](https://pypi.org/project/gaik/)
 
-## Provider Extension Checklist
-1. Create `gaik/providers/<name>.py` implementing `LLMProvider.create_chat_model()`
-2. Use `_build_model_kwargs()` to merge model + kwargs safely
-3. Add dependency (e.g., `langchain-<name>`) to `pyproject.toml`
-4. Register provider in `gaik/providers/__init__.py`
-5. Smoke test with `examples/demo_anthropic.py` pattern
+## Core APIs
+```python
+# Extraction
+from gaik.extract import SchemaExtractor
+extractor = SchemaExtractor("Extract name and age", provider="anthropic")
+results = extractor.extract(["Alice is 25"])
 
-## Testing & Tooling
-- Quick regression: `python examples/01_getting_started.py`
-- Provider demo: `python examples/demo_anthropic.py`
-- Packaging sanity: `cd gaik-py && python -m build && twine check dist/*`
-- CI pipeline: GitHub Actions → version check → tests → build → publish (Test PyPI)
+# Vision (requires: pip install gaik[vision])
+from gaik.parsers import VisionParser, get_openai_config
+config = get_openai_config(use_azure=True)  # or False for OpenAI
+parser = VisionParser(config)
+```
 
-## Release Flow
-1. Update version in `gaik-py/pyproject.toml`
-2. Commit change and tag `vX.Y.Z`, push tag + main
-3. GH Actions publishes to Test PyPI
-4. Create GitHub release notes after pipeline succeeds
+## Env Vars (choose one provider)
+- OpenAI: `OPENAI_API_KEY`
+- Anthropic: `ANTHROPIC_API_KEY`
+- Google: `GOOGLE_API_KEY`
+- Azure: `AZURE_API_KEY` + `AZURE_ENDPOINT` (backward compatible: `AZURE_OPENAI_*`)
 
-## Guardrails
-- Keep `gaik.extract` API backward compatible within minor versions
-- Sync docs/examples whenever behavior changes
-- No secrets in repo; rely on env variables
-- Document any breaking change in release notes before tagging
+## Adding Provider
+1. Create `gaik/providers/<name>.py` with `LLMProvider.create_chat_model()`
+2. Use `_build_model_kwargs()` helper
+3. Add `langchain-<name>` to `pyproject.toml`
+4. Register in `gaik/providers/__init__.py`
+5. Test with `examples/demo_anthropic.py` pattern
+
+## Testing
+- Smoke test: `python examples/demo_anthropic.py`
+- Build: `cd gaik-py && python -m build && twine check dist/*`
+- CI: `environment: release` → version validation → PyPI publish → GitHub Release
+
+## Publishing (see PUBLISHING.md for details)
+1. Update `gaik-py/pyproject.toml` version
+2. Commit and tag: `git tag vX.Y.Z && git push origin main vX.Y.Z`
+3. GitHub Actions auto-publishes to PyPI
+4. Verify: `pip install gaik && python -c "import gaik; print(gaik.__version__)"`
+
+## Documentation Style
+- **Cheatsheet format**: Commands/examples only, minimal prose
+- **Keep concise**: Remove marketing language, focus on facts
+- **Tables over prose**: Use tables for multi-option configs
+- **Reference, not tutorial**: Quick lookup, not explanations
+
+## Breaking Changes
+- Maintain backward compatibility within minor versions
+- Document breaking changes in release notes before tagging
+- Update all docs/examples when behavior changes

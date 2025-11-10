@@ -25,93 +25,30 @@ AZURE_ENDPOINT=https://your-resource.openai.azure.com/
 
 **Note:** You only need one API key to get started. The examples will work with any available provider.
 
-### 2. Install Dependencies
+### 2. Install Package
 
 ```bash
-# With uv (recommended)
-cd gaik-py
-uv sync
+# Install from PyPI
+pip install gaik
 
-# For vision features (PDF to Markdown)
-uv pip install "gaik[vision]"
-```
-
-Or with standard pip:
-
-```bash
-pip install -e gaik-py
-
-# For vision features (PDF to Markdown)
-pip install -e "gaik-py[vision]"
+# For vision features (PDF to Markdown conversion)
+pip install gaik[vision]
 ```
 
 ### 3. Run Examples
 
 ```bash
-# From project root
-python examples/01_getting_started.py
-python examples/02_pydantic_schemas.py
-python examples/03_real_world_use_cases.py
+# Extraction demo
+python examples/demo_anthropic.py
+
+# Vision demos (requires gaik[vision])
+python examples/demo_vision_simple.py
+python examples/demo_vision_parser.py invoice.pdf
 ```
 
 ---
 
 ## Examples
-
-### 🚀 [01_getting_started.py](01_getting_started.py)
-
-**Best for:** First-time users, quick overview
-
-Learn the basics in 5 examples:
-
-- ✅ Basic extraction with natural language descriptions
-- ✅ Batch processing multiple documents
-- ✅ Schema inspection (without API calls)
-- ✅ Switching providers (OpenAI, Anthropic, Google, Azure)
-- ✅ Complex schemas with lists and nested data
-
-```bash
-python examples/01_getting_started.py
-```
-
----
-
-### 🔧 [02_pydantic_schemas.py](02_pydantic_schemas.py)
-
-**Best for:** Understanding schemas, integration
-
-Deep dive into Pydantic schemas:
-
-- ✅ Inspect generated Pydantic models
-- ✅ Export to JSON Schema format
-- ✅ Use Pydantic validation features
-- ✅ Work with nested structures
-- ✅ Field introspection
-
-```bash
-python examples/02_pydantic_schemas.py
-```
-
----
-
-### 💼 [03_real_world_use_cases.py](03_real_world_use_cases.py)
-
-**Best for:** Practical applications, production ideas
-
-Real-world business scenarios:
-
-- 📄 **Invoice Processing** - Automated accounting
-- 💬 **Customer Feedback** - Sentiment analysis
-- 👤 **Resume Parsing** - Recruitment automation
-- 🛍️ **Product Catalogs** - E-commerce data
-- 📰 **News Metadata** - Content management
-- 📧 **Email Classification** - Support routing
-
-```bash
-python examples/03_real_world_use_cases.py
-```
-
----
 
 ### 🤖 [demo_anthropic.py](demo_anthropic.py)
 
@@ -442,12 +379,10 @@ pip install -e .
 
 ## Next Steps
 
-1. **Start with basics:** Run `01_getting_started.py`
-2. **Understand schemas:** Run `02_pydantic_schemas.py`
-3. **Explore use cases:** Run `03_real_world_use_cases.py`
-4. **Verify installation:** Run `test_gaik_installation.py` (no API needed)
-5. **Test providers:** Run `test_real_extraction.py` (requires API key)
-6. **Adapt to your needs:** Modify examples for your specific use case
+1. **Start with extraction:** Run `demo_anthropic.py`
+2. **Try vision parsing:** Run `demo_vision_simple.py` (requires `gaik[vision]`)
+3. **Check main docs:** [../gaik-py/README.md](../gaik-py/README.md) for full API reference
+4. **Adapt to your needs:** Modify examples for your specific use case
 
 ---
 
