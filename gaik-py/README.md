@@ -23,7 +23,7 @@ Convert PDF pages to Markdown with OpenAI or Azure OpenAI vision models:
 
 - ✅ **Single API surface** - Works with standard OpenAI or Azure deployments
 - ✅ **Optional extras** - Install with `pip install gaik[vision]`
-- ✅ **CLI ready** - Use `parser.py` demo for quick conversions
+- ✅ **CLI ready** - See `examples/demo_vision_parser.py` for quick conversions
 - ✅ **Table-aware** - Keeps multi-page tables intact with optional cleanup
 
 ## Installation

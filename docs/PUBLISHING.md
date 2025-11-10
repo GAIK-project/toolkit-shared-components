@@ -92,6 +92,16 @@ git push origin main v<new-version>
 
 ---
 
+## 🧩 Adding New Code Safely
+
+1. Implement changes under `gaik-py/src/gaik/...` and keep public APIs backwards compatible.
+2. Update exports (for example `gaik/__init__.py`) when new modules must be discoverable by users.
+3. Add or adjust dependencies in `gaik-py/pyproject.toml` (core requirements → `[project.dependencies]`, extras → `[project.optional-dependencies]`).
+4. Run `python examples/01_getting_started.py` to smoke test the package before bumping the version.
+5. Update relevant docs/examples so new behavior is covered prior to tagging a release.
+
+---
+
 ## ✅ Pre-Release Checklist
 
 ```bash
@@ -152,16 +162,6 @@ twine upload dist/*
 6. ✅ Verify GitHub Actions succeeds
 7. ✅ Test installation from PyPI
 8. ✅ Create GitHub Release (optional - via GitHub UI or `gh release create vX.Y.Z --title "Title" --notes "Notes"`)
-
----
-
-## 🔙 Rollback
-
-**Important:** Cannot delete versions from PyPI!
-
-- Publish fixed version (e.g., `0.2.1`)
-- Update documentation
-- Mark broken version in release notes
 
 ---
 

@@ -31,12 +31,18 @@ AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
 # With uv (recommended)
 cd gaik-py
 uv sync
+
+# For vision features (PDF to Markdown)
+uv pip install "gaik[vision]"
 ```
 
 Or with standard pip:
 
 ```bash
 pip install -e gaik-py
+
+# For vision features (PDF to Markdown)
+pip install -e "gaik-py[vision]"
 ```
 
 ### 3. Run Examples
@@ -124,6 +130,56 @@ Simple, modular demonstrations:
 
 ```bash
 python examples/demo_anthropic.py
+```
+
+---
+
+### 🖼️ [demo_vision_simple.py](demo_vision_simple.py)
+
+**Best for:** PDF to Markdown conversion with vision models
+
+Convert PDF documents to structured Markdown using OpenAI vision models:
+
+- ✅ Simple API for PDF processing
+- ✅ Works with OpenAI or Azure OpenAI
+- ✅ Automatic image rendering
+- ✅ Multi-page document support
+- ✅ Table-aware conversion
+
+**Requirements:** `pip install gaik[vision]`
+
+```bash
+python examples/demo_vision_simple.py
+```
+
+---
+
+### 🔧 [demo_vision_parser.py](demo_vision_parser.py)
+
+**Best for:** Advanced PDF processing with CLI
+
+Full-featured CLI tool for PDF to Markdown conversion:
+
+- ✅ Command-line interface
+- ✅ Custom prompt support
+- ✅ DPI and quality control
+- ✅ Multi-page cleanup options
+- ✅ Poppler path configuration
+
+**Usage:**
+
+```bash
+# Convert a PDF
+python examples/demo_vision_parser.py invoice.pdf
+
+# Custom output path
+python examples/demo_vision_parser.py invoice.pdf --output result.md
+
+# Use standard OpenAI (not Azure)
+python examples/demo_vision_parser.py invoice.pdf --openai
+
+# Skip cleanup for multi-page docs
+python examples/demo_vision_parser.py invoice.pdf --no-clean
 ```
 
 ---
