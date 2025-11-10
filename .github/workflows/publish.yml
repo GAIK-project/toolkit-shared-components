@@ -1,0 +1,72 @@
+name: Publish to Production PyPI
+
+on:
+  workflow_dispatch:  # Allow manual trigger
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger on version tags like v0.1.0
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment: release  # Use GitHub environment for protection
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Validate version
+      run: |
+        TAG=${GITHUB_REF#refs/tags/}
+        python gaik-py/tests/validate_version.py $TAG
+
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+
+    - name: Build package
+      working-directory: gaik-py
+      run: python -m build
+
+    - name: Check package
+      working-directory: gaik-py
+      run: twine check dist/*
+
+    - name: Publish to PyPI
+      working-directory: gaik-py
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        twine upload dist/*
+
+    - name: Test installation from PyPI
+      run: |
+        # Wait a moment for PyPI to update
+        sleep 30
+
+        # Install from production PyPI
+        pip install gaik
+
+        # Run verification tests
+        python gaik-py/tests/verify_installation.py
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-package
+        path: gaik-py/dist/
+        retention-days: 7
+
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        generate_release_notes: true
+        files: gaik-py/dist/*

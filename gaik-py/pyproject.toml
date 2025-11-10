@@ -5,10 +5,19 @@ description = "General AI Kit - Reusable AI/ML components for Python"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
-authors = [
-    { name = "GAIK Project" }
+authors = [{ name = "GAIK Project" }]
+keywords = [
+    "ai",
+    "ml",
+    "langchain",
+    "openai",
+    "anthropic",
+    "google",
+    "structured-outputs",
+    "pydantic",
+    "schema",
+    "extraction",
 ]
-keywords = ["ai", "ml", "langchain", "openai", "anthropic", "google", "structured-outputs", "pydantic", "schema", "extraction"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -30,11 +39,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "ruff>=0.14.1",
-    "build>=1.0",
-    "twine>=4.0",
-]
+dev = ["ruff>=0.14.1", "build>=1.0", "twine>=4.0"]
 vision = [
     "openai>=1.40.0",
     "pdf2image>=1.17.0",
