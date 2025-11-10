@@ -38,34 +38,19 @@ pip install gaik[vision]
 
 ## Quick Start
 
-### 1. Set up your provider API key
+### Extract Data from Text
 
-**OpenAI (default):**
-
-```bash
-export OPENAI_API_KEY='sk-...'  # Get from: https://platform.openai.com/api-keys
-```
-
-**Anthropic:**
+Set your API key (choose one):
 
 ```bash
-export ANTHROPIC_API_KEY='sk-ant-...'  # Get from: https://console.anthropic.com
+export OPENAI_API_KEY='sk-...'              # OpenAI (default)
+export ANTHROPIC_API_KEY='sk-ant-...'       # Anthropic
+export GOOGLE_API_KEY='...'                 # Google
+export AZURE_API_KEY='...'                  # Azure
+export AZURE_ENDPOINT='https://...'         # Azure (also required)
 ```
 
-**Google:**
-
-```bash
-export GOOGLE_API_KEY='...'  # Get from: https://ai.google.dev
-```
-
-**Azure OpenAI:**
-
-```bash
-export AZURE_API_KEY='...'
-export AZURE_ENDPOINT='https://your-resource.openai.azure.com/'
-```
-
-### 2. Simple Extraction
+Then extract:
 
 ```python
 from gaik.extract import SchemaExtractor
@@ -76,20 +61,27 @@ result = extractor.extract_one("Alice is 25 years old")
 print(result)
 # {'name': 'Alice', 'age': 25}
 
-# Switch to Anthropic Claude
-extractor = SchemaExtractor(
-    "Extract name and age from text",
-    provider="anthropic"
-)
-
-# Use Google Gemini
-extractor = SchemaExtractor(
-    "Extract name and age from text",
-    provider="google"
-)
+# Switch provider
+extractor = SchemaExtractor("Extract name and age", provider="anthropic")  # or "google", "azure"
 ```
 
-### 3. Batch Extraction
+### Convert PDF to Markdown
+
+Requires: `pip install gaik[vision]`
+
+```python
+from gaik.parsers import VisionParser, get_openai_config
+
+# Configure (Azure or OpenAI)
+config = get_openai_config(use_azure=True)  # or use_azure=False
+parser = VisionParser(config)
+
+# Convert PDF
+markdown = parser.parse_pdf("invoice.pdf", clean_output=True)
+print(markdown)
+```
+
+### Batch Extraction
 
 ```python
 from gaik.extract import dynamic_extraction_workflow
@@ -172,6 +164,8 @@ schema = InvoiceModel.model_json_schema()
 
 ## API Reference
 
+### Extraction API
+
 | Function/Class                  | Purpose                                           |
 | ------------------------------- | ------------------------------------------------- |
 | `SchemaExtractor`               | Reusable extractor with provider selection        |
@@ -180,7 +174,15 @@ schema = InvoiceModel.model_json_schema()
 | `FieldSpec`                     | Define a single extraction field                  |
 | `ExtractionRequirements`        | Collection of field specifications                |
 
-### Provider Parameters
+### Vision Parser API
+
+| Function/Class        | Purpose                                    |
+| --------------------- | ------------------------------------------ |
+| `VisionParser`        | PDF to Markdown converter using vision LLM |
+| `get_openai_config()` | Helper to configure OpenAI/Azure API       |
+| `OpenAIConfig`        | Configuration dataclass for vision parser  |
+
+### Extraction Parameters
 
 ```python
 SchemaExtractor(
@@ -193,18 +195,29 @@ SchemaExtractor(
 )
 ```
 
-**Note:**
+### Vision Parser Parameters
 
-- IDEs with type checking (VS Code, PyCharm) will show autocomplete for `provider` parameter
-- Either `user_description` or `requirements` must be provided
-- Using `requirements` skips LLM parsing step (faster & cheaper)
+```python
+VisionParser(config: OpenAIConfig)
+
+get_openai_config(
+    use_azure: bool = True,  # True for Azure, False for OpenAI
+) -> OpenAIConfig
+```
+
+**Environment variables (auto-detected):**
+
+- OpenAI: `OPENAI_API_KEY`
+- Azure: `AZURE_API_KEY` + `AZURE_ENDPOINT` + `AZURE_DEPLOYMENT` (optional: `AZURE_API_VERSION`)
 
 ## Default Models
 
-- OpenAI: `gpt-4.1`
-- Anthropic: `claude-sonnet-4-5-20250929`
-- Google: `gemini-2.5-flash`
-- Azure: `gpt-4.1`
+| Provider  | Default Model                |
+| --------- | ---------------------------- |
+| OpenAI    | `gpt-4.1`                    |
+| Anthropic | `claude-sonnet-4-5-20250929` |
+| Google    | `gemini-2.5-flash`           |
+| Azure     | `gpt-4.1` (or your deployment) |
 
 ## Resources
 
