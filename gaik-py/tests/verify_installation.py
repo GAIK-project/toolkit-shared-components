@@ -24,6 +24,10 @@ def test_all_submodules():
 
     import gaik
     modules_found = []
+    modules_skipped = []
+
+    # Modules that require optional dependencies
+    OPTIONAL_MODULES = ["gaik.parsers"]
 
     for importer, modname, ispkg in pkgutil.walk_packages(
         path=gaik.__path__,
@@ -50,6 +54,16 @@ def test_all_submodules():
                         sys.exit(1)
                 print(f"    - {len(mod.__all__)} public API items verified")
 
+        except ImportError as e:
+            # Check if this is an optional module
+            is_optional = any(modname.startswith(opt) for opt in OPTIONAL_MODULES)
+            if is_optional:
+                modules_skipped.append(modname)
+                print(f"  - {modname} (optional, skipped: {str(e)[:80]})")
+            else:
+                # Core module failed to import - this is a real error
+                print(f"  ✗ ERROR importing {modname}: {e}")
+                sys.exit(1)
         except Exception as e:
             print(f"  ✗ ERROR importing {modname}: {e}")
             sys.exit(1)
@@ -59,6 +73,8 @@ def test_all_submodules():
         sys.exit(1)
 
     print(f"\n✓ Successfully tested {len(modules_found)} modules")
+    if modules_skipped:
+        print(f"  - Skipped {len(modules_skipped)} optional module(s)")
 
 
 def test_extract_module():

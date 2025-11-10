@@ -9,11 +9,11 @@ A modular toolkit providing production-ready AI/ML utilities. Currently featurin
 ## 📦 Quick Install
 
 ```bash
-# From Test PyPI (current)
-pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ gaik
+# From PyPI (production)
+pip install gaik
 
-# From PyPI (coming soon)
-# pip install gaik
+# With optional vision parser support
+pip install gaik[vision]
 ```
 
 ---
