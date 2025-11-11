@@ -2,6 +2,24 @@
 
 This directory contains scripts used for CI/CD pipelines and release automation.
 
+## Purpose
+
+**CI/CD scripts verify package installation and release processes.**
+
+- Smoke test that package installs correctly from PyPI
+- Validate version consistency between git tags and pyproject.toml
+- Run without mocks - test real package installation
+- Execute during releases and after every push
+
+**vs. tests/** - Unit tests that verify code functionality with full coverage
+
+## When Run
+
+| Script | test.yml (every push) | publish.yml (release) |
+|--------|----------------------|----------------------|
+| verify_installation.py | ✅ After unit tests | ✅ After PyPI upload |
+| validate_version.py | ❌ | ✅ Before build |
+
 ## Scripts
 
 ### verify_installation.py

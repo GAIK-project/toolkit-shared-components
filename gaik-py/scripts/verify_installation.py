@@ -5,9 +5,9 @@ It imports all modules, checks APIs, and runs basic functionality tests
 without making any actual LLM API calls.
 """
 
-import sys
 import importlib
 import pkgutil
+import sys
 
 
 def test_main_package():
@@ -29,7 +29,7 @@ def test_all_submodules():
     # Modules that require optional dependencies
     OPTIONAL_MODULES = ["gaik.parsers", "gaik.extract", "gaik.providers"]
 
-    for importer, modname, ispkg in pkgutil.walk_packages(
+    for _importer, modname, _ispkg in pkgutil.walk_packages(
         path=gaik.__path__,
         prefix="gaik.",
         onerror=lambda x: None,
@@ -86,10 +86,8 @@ def test_extract_module():
 
     try:
         from gaik.extract import (
-            SchemaExtractor,
-            dynamic_extraction_workflow,
-            FieldSpec,
             ExtractionRequirements,
+            FieldSpec,
             create_extraction_model,
             sanitize_model_name,
         )
@@ -128,7 +126,7 @@ def test_provider_registry():
     print("\nTesting provider registry:")
 
     try:
-        from gaik.providers import get_provider, PROVIDERS
+        from gaik.providers import PROVIDERS, get_provider
 
         # Check all expected providers exist
         expected_providers = ["openai", "anthropic", "google", "azure"]
@@ -160,7 +158,8 @@ def test_langchain_integration():
 
     try:
         from langchain_openai import ChatOpenAI
-        from gaik.extract import SchemaExtractor, FieldSpec, ExtractionRequirements
+
+        from gaik.extract import ExtractionRequirements, FieldSpec, SchemaExtractor
 
         # Create mock LangChain client
         client = ChatOpenAI(api_key="fake-key-for-test", model="gpt-4.1")

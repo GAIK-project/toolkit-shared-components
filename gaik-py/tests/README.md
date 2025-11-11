@@ -2,6 +2,17 @@
 
 This directory contains pytest-based unit tests for the GAIK package.
 
+## Purpose
+
+**Unit tests verify code functionality with comprehensive test coverage.**
+
+- Test all modules, classes, and functions
+- Use mocks for external dependencies (LLM APIs)
+- Generate coverage reports (target: 80%+)
+- Run on every push/PR to catch regressions
+
+**vs. scripts/** - CI/CD verification scripts that test package installation
+
 ## Running Tests
 
 ```bash
