@@ -36,7 +36,7 @@ parser = VisionParser(config)
 - Build: `cd gaik-py && python -m build && twine check dist/*`
 - CI: `environment: release` → version validation → PyPI publish → GitHub Release
 
-## Publishing (see PUBLISHING.md for details)
+## Publishing (see CONTRIBUTING.md Release section)
 1. Update `gaik-py/pyproject.toml` version
 2. Commit and tag: `git tag vX.Y.Z && git push origin main vX.Y.Z`
 3. GitHub Actions auto-publishes to PyPI

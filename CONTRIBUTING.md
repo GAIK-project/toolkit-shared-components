@@ -1,132 +1,253 @@
-# Contributing to GAIK
+# 📋 Contributing to GAIK - Quick Guide
 
-Thank you for your interest in contributing to GAIK!
+Simple cheatsheet for developers new to this project.
 
-## Developer Guide: Adding New LLM Provider
+---
 
-GAIK uses a shared `gaik.providers` module that all library components can use.
+## 🚀 Quick Start
 
-### 1. Create provider class
+```bash
+# Clone and setup
+git clone https://github.com/GAIK-project/gaik-toolkit.git
+cd gaik-toolkit/gaik-py
 
-File: `gaik-py/src/gaik/providers/yourprovider.py`
+# Create virtual environment and install
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+source .venv/bin/activate   # Linux/Mac
 
-```python
-from langchain_yourprovider import ChatYourProvider
-from .base import LLMProvider, _build_model_kwargs
+# Install for development (all features)
+pip install -e .[all]
 
-
-class YourProviderProvider(LLMProvider):
-    @property
-    def default_model(self) -> str:
-        return "your-default-model-name"
-
-    def create_chat_model(self, model=None, api_key=None, **kwargs):
-        model_name = model or self.default_model
-        model_kwargs = _build_model_kwargs(model_name, api_key=api_key, **kwargs)
-        return ChatYourProvider(**model_kwargs)
+# Test it works
+python ../examples/extract/demo_anthropic.py
+python ../examples/vision/demo_vision_simple.py
 ```
 
-### 2. Add dependency
+**Installation options:**
 
-File: `gaik-py/pyproject.toml`
+```bash
+# All features (recommended for development)
+pip install -e .[all]
+
+# Extract only (data extraction with all LLM providers)
+pip install -e .[extract]
+
+# Vision only (PDF parsing)
+pip install -e .[vision]
+```
+
+---
+
+## ➕ Adding New Code
+
+### Add a New LLM Provider
+
+**Files to edit:**
+
+1. **Create provider** → `gaik-py/src/gaik/providers/yourprovider.py`
+
+   ```python
+   from langchain_yourprovider import ChatYourProvider
+   from .base import LLMProvider, _build_model_kwargs
+
+   class YourProviderProvider(LLMProvider):
+       @property
+       def default_model(self) -> str:
+           return "model-name"
+
+       def create_chat_model(self, model=None, api_key=None, **kwargs):
+           model_name = model or self.default_model
+           model_kwargs = _build_model_kwargs(model_name, api_key=api_key, **kwargs)
+           return ChatYourProvider(**model_kwargs)
+   ```
+
+2. **Add dependency** → `gaik-py/pyproject.toml`
+
+   Add to `[project.optional-dependencies]` extract group:
+
+   ```toml
+   extract = [
+       "langchain-core>=1.0.3",
+       "langchain-yourprovider>=1.0.0",  # Add here
+   ]
+   ```
+
+3. **Register** → `gaik-py/src/gaik/providers/__init__.py`
+
+**Done!** Use with `SchemaExtractor("task", provider="yourprovider")`
+
+### Add a New Feature/Parser
+
+- **Extraction features** → `gaik-py/src/gaik/extract/`
+- **Vision/PDF parsers** → `gaik-py/src/gaik/parsers/`
+- **Add examples** → `examples/extract/` or `examples/vision/`
+
+---
+
+## 📦 Dependencies - Feature Groups
+
+**GAIK uses optional dependency groups** - users install only what they need!
+
+### Feature Groups
+
+| Group       | Purpose                                | Dependencies                                             |
+| ----------- | -------------------------------------- | -------------------------------------------------------- |
+| `[extract]` | Data extraction with all LLM providers | langchain-\* packages (OpenAI, Anthropic, Google, Azure) |
+| `[vision]`  | PDF/image parsing                      | openai, pdf2image, pillow                                |
+| `[all]`     | All features                           | extract + vision                                         |
+
+### Naming Convention
+
+- **LangChain providers:** `langchain-{provider}` (e.g., `langchain-openai`, `langchain-anthropic`)
+- **Vision tools:** `pdf2image`, `pillow`, `openai`
+- **Core utilities:** `pydantic` (always installed)
+
+### Where to Add Dependencies
+
+**Location:** `gaik-py/pyproject.toml` under `[project.optional-dependencies]`
+
+**For extract providers:**
 
 ```toml
-dependencies = [
-    ...
-    "langchain-yourprovider>=x.x.x",
+[project.optional-dependencies]
+extract = [
+    "langchain-core>=1.0.3",
+    "langchain-yourprovider>=1.0.0",  # Add here
 ]
 ```
 
-### 3. Register provider
+**For vision features:**
 
-File: `gaik-py/src/gaik/providers/__init__.py`
-
-```python
-from .yourprovider import YourProviderProvider
-
-PROVIDERS = {
-    ...
-    "yourprovider": YourProviderProvider(),
-}
+```toml
+vision = [
+    "openai>=2.7",
+    "your-vision-tool>=1.0.0",  # Add here
+]
 ```
 
-### 4. Use it
+**After adding:** Reinstall with `pip install -e .[all]`
 
-```python
-from gaik.extract import SchemaExtractor
+---
 
-extractor = SchemaExtractor(
-    "Extract name and age",
-    provider="yourprovider"
-)
+## 🧪 Testing
+
+**Write tests for your code:**
+
+- Add tests to `gaik-py/tests/` - GitHub Actions runs these automatically
+- Add usage example to `examples/` - Shows how to use your feature
+
+**Code quality:**
+
+```bash
+ruff format src/gaik/
+ruff check --fix src/gaik/
 ```
 
-Done! The provider is now available to all GAIK modules.
+**Before committing:**
 
-## Testing Your Changes
+- ✅ Tests added (if needed)
+- ✅ Code formatted (ruff)
 
-### Local development with uv (recommended)
+---
+
+## 🚀 Release Process (Maintainers Only)
+
+**GitHub Actions handles everything automatically!**
+
+### Automated Release Steps
+
+1. **Update version** → Edit `gaik-py/pyproject.toml`
+
+   ```toml
+   version = "0.3.0"  # Bump version number
+   ```
+
+2. **Commit changes**
+
+   ```bash
+   git add gaik-py/pyproject.toml
+   git commit -m "Bump to v0.3.0"
+   ```
+
+3. **Create git tag**
+
+   ```bash
+   git tag v0.3.0
+   ```
+
+4. **Push everything**
+
+   ```bash
+   git push origin main
+   git push origin v0.3.0
+   ```
+
+5. **Done!** 🎉 GitHub Actions automatically:
+   - Builds the package (`python -m build`)
+   - Validates metadata (`twine check dist/*`)
+   - Publishes to PyPI (`twine upload dist/*`)
+   - Creates GitHub Release with notes
+
+**Check progress:** GitHub → Actions tab → "Publish to Production PyPI" workflow
+
+### Manual Release (Emergency Only)
+
+If GitHub Actions fails, maintainers can publish manually:
 
 ```bash
 cd gaik-py
 
-# Create virtual environment
-uv venv
-
-# Install package in editable mode
-uv pip install -e .
-
-# Run tests (no API calls needed)
-uv run python ../examples/test_gaik_installation.py
-
-# Test with real API (requires API key)
-uv run python ../examples/test_real_extraction.py
-
 # Build package
-uv pip install build
-uv run python -m build
-
-# Check package
-uv pip install twine
-uv run twine check dist/*
-```
-
-### Testing checklist
-
-- ✅ All imports work
-- ✅ Provider registry contains your new provider
-- ✅ Package builds without errors
-- ✅ Twine check passes
-- ✅ Real extraction works (if API key available)
-
-## Publishing New Versions
-
-See detailed guide: [docs/PUBLISHING.md](docs/PUBLISHING.md)
-
-**Quick workflow:**
-
-1. Update version in `gaik-py/pyproject.toml`
-2. Commit changes
-3. Create and push tag: `git tag v<version> && git push origin main v<version>`
-4. GitHub Actions automatically builds and publishes to PyPI
-
-## Local Development
-
-```bash
-# Clone and install
-git clone https://github.com/GAIK-project/gaik-toolkit.git
-cd gaik-toolkit/gaik-py
-pip install -e .
-
-# Optional: include dev tools
-pip install -e .[dev]
-
-# Build and test
 python -m build
+
+# Validate
 twine check dist/*
+
+# Upload to PyPI (requires PYPI_API_TOKEN)
+twine upload dist/*
 ```
 
-## Questions?
+> **Note:** This is rarely needed. GitHub Actions is the recommended way to publish.
+
+---
+
+## 📁 Project Structure Reference
+
+```
+gaik-toolkit/
+├── gaik-py/                          # 📦 PyPI package (published)
+│   ├── src/gaik/                     # Source code
+│   │   ├── extract/                  # Data extraction module
+│   │   ├── parsers/                  # Vision/PDF parsing
+│   │   └── providers/                # LLM provider implementations
+│   ├── tests/                        # 🧪 Test scripts
+│   ├── pyproject.toml                # Package config & dependencies
+│   └── README.md                     # Package documentation
+│
+├── dev/                              # 🚧 Work in progress (not published)
+│   ├── experimental/                 # Experimental features
+│   ├── features/                     # Features under development
+│   └── README.md                     # Dev workflow guide
+│
+├── examples/                         # 📚 Usage examples (not published)
+│   ├── extract/                      # Extraction demos
+│   └── vision/                       # Vision parsing demos
+│
+└── .github/workflows/                # 🤖 CI/CD pipelines
+    ├── test.yml                      # Run tests on PR/push
+    └── publish.yml                   # Auto-publish to PyPI
+```
+
+**Where to add code:**
+
+- Production-ready code → `gaik-py/src/gaik/`
+- Code in development → `dev/` (see [dev/README.md](dev/README.md))
+- Usage examples → `examples/`
+
+---
+
+## ❓ Questions?
 
 - **Issues**: [github.com/GAIK-project/gaik-toolkit/issues](https://github.com/GAIK-project/gaik-toolkit/issues)
 - **Documentation**: [gaik-py/README.md](gaik-py/README.md)

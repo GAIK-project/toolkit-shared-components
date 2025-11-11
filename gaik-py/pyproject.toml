@@ -31,20 +31,41 @@ classifiers = [
 ]
 
 dependencies = [
-    "pydantic>=2.12.3",
+    # Core runtime requirement shared across all installs
+    "pydantic>=2.12.4",
+]
+
+[project.optional-dependencies]
+# Data extraction with all LLM providers (OpenAI, Anthropic, Google, Azure)
+extract = [
+    # LangChain core plus every supported chat provider
     "langchain-core>=1.0.3",
     "langchain-openai>=1.0.2",
     "langchain-anthropic>=1.0.1",
     "langchain-google-genai>=3.0.1",
 ]
 
-[project.optional-dependencies]
-dev = ["ruff>=0.14.1", "build>=1.0", "twine>=4.0"]
+# Vision/PDF parsing with OpenAI or Azure OpenAI
 vision = [
-    "openai>=1.40.0",
+    # Required to call OpenAI or Azure OpenAI vision endpoints
+    "openai>=2.7",
+    # Local PDF/image utilities
     "pdf2image>=1.17.0",
     "pillow>=10.0.0",
     "python-dotenv>=1.0.0",
+]
+
+# All features
+all = [
+    "gaik[extract]",
+    "gaik[vision]",
+]
+
+# Development tooling for maintainers only
+dev = [
+    "ruff>=0.14.1",
+    "build>=1.0",
+    "twine>=4.0",
 ]
 
 [project.urls]

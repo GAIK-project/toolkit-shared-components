@@ -29,21 +29,30 @@ Convert PDF pages to Markdown with OpenAI or Azure OpenAI vision models:
 ## Installation
 
 ```bash
-# From PyPI (production)
-pip install gaik
+# Extract feature (all LLM providers: OpenAI, Anthropic, Google, Azure)
+pip install gaik[extract]
 
-# With optional vision parser support
+# Vision/PDF parsing (OpenAI or Azure OpenAI)
 pip install gaik[vision]
+
+# All features
+pip install gaik[all]
 ```
+
+**Why optional dependencies?**
+
+Extract users don't need vision libraries. Vision users don't need LangChain packages. This keeps installation lightweight and fast!
 
 ## Quick Start
 
 ### Extract Data from Text
 
+**Install:** `pip install gaik[extract]`
+
 Set your API key (choose one):
 
 ```bash
-export OPENAI_API_KEY='sk-...'              # OpenAI (default)
+export OPENAI_API_KEY='sk-...'              # OpenAI
 export ANTHROPIC_API_KEY='sk-ant-...'       # Anthropic
 export GOOGLE_API_KEY='...'                 # Google
 export AZURE_API_KEY='...'                  # Azure

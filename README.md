@@ -121,7 +121,6 @@ toolkit-shared-components/
 │   └── README.md
 ├── examples/             # Usage examples
 ├── docs/                 # Documentation
-│   └── PUBLISHING.md     # PyPI publishing guide
 └── .github/workflows/    # CI/CD automation
 ```
 
@@ -182,7 +181,7 @@ extractor = SchemaExtractor(
 
 - **Package (PyPI)**: [pypi.org/project/gaik](https://pypi.org/project/gaik/)
 - **Documentation**: [gaik-py/README.md](gaik-py/README.md)
-- **Publishing Guide**: [docs/PUBLISHING.md](docs/PUBLISHING.md)
+- **Contributing & Release**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Cheatsheet (FI)**: [docs/gaik-toolkit-cheatsheet.md](docs/gaik-toolkit-cheatsheet.md)
 - **Issues**: [github.com/GAIK-project/toolkit-shared-components/issues](https://github.com/GAIK-project/toolkit-shared-components/issues)
 - **OpenAI Docs**: [OpenAI structured outputs guide](https://platform.openai.com/docs/guides/structured-outputs)

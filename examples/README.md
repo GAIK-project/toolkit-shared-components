@@ -340,7 +340,7 @@ pip install -e .
 
 - **Main README:** [../README.md](../README.md)
 - **Package Documentation:** [../gaik-py/README.md](../gaik-py/README.md)
-- **Publishing Guide:** [../docs/PUBLISHING.md](../docs/PUBLISHING.md)
+- **Contributing & Release:** [../CONTRIBUTING.md](../CONTRIBUTING.md)
 - **Cheatsheet (Finnish):** [../docs/gaik-toolkit-cheatsheet.md](../docs/gaik-toolkit-cheatsheet.md)
 
 ---
