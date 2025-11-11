@@ -37,6 +37,8 @@ pip install gaik[vision]
 
 # All features
 pip install gaik[all]
+
+> **Heads-up:** `gaik[vision]` pulls in `pdf2image`, which requires the Poppler binaries on your system. Install Poppler with your package manager (`brew install poppler`, `apt-get install poppler-utils`, or [download for Windows](https://github.com/oschwartz10612/poppler-windows/releases)) before running the vision examples.
 ```
 
 **Why optional dependencies?**
@@ -79,6 +81,7 @@ extractor = SchemaExtractor("Extract name and age", provider="anthropic")  # or 
 Requires: `pip install gaik[vision]`
 
 Set environment variables:
+
 ```bash
 # For Azure OpenAI (all 3 required)
 export AZURE_API_KEY='your-api-key'
@@ -92,6 +95,7 @@ export OPENAI_API_KEY='sk-...'
 > **Note:** If using `.env` file, ensure all three Azure variables are set.
 
 Then convert:
+
 ```python
 from gaik.parsers import VisionParser, get_openai_config
 

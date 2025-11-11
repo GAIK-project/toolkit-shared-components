@@ -171,39 +171,81 @@ ruff check --fix src/gaik/
 
 ### Automated Release Steps
 
-1. **Update version** → Edit `gaik-py/pyproject.toml`
+1. **Test first!** → Push changes to `main` or `dev` branch
+
+   ```bash
+   git add .
+   git commit -m "Your changes"
+   git push origin main
+   ```
+
+   **Check tests pass:** GitHub → Actions → "Run Tests" workflow
+   - Tests run automatically on every push to main/dev
+   - Tests must pass before you can release
+   - Tests now include all [extract] dependencies
+
+2. **Update version** → Edit `gaik-py/pyproject.toml`
 
    ```toml
    version = "0.3.0"  # Bump version number
    ```
 
-2. **Commit changes**
+3. **Commit version bump**
 
    ```bash
    git add gaik-py/pyproject.toml
    git commit -m "Bump to v0.3.0"
+   git push origin main
    ```
 
-3. **Create git tag**
+4. **Create and push git tag**
 
    ```bash
    git tag v0.3.0
-   ```
-
-4. **Push everything**
-
-   ```bash
-   git push origin main
    git push origin v0.3.0
    ```
 
 5. **Done!** 🎉 GitHub Actions automatically:
+   - ✅ Runs all tests first (Python 3.10, 3.11, 3.12)
+   - ✅ Only publishes if tests pass
    - Builds the package (`python -m build`)
    - Validates metadata (`twine check dist/*`)
    - Publishes to PyPI (`twine upload dist/*`)
    - Creates GitHub Release with notes
 
 **Check progress:** GitHub → Actions tab → "Publish to Production PyPI" workflow
+
+### Testing Pipeline Without Release
+
+You can test the publish workflow without actually creating a tag:
+
+```bash
+# Go to GitHub → Actions → "Publish to Production PyPI"
+# Click "Run workflow" → Select branch → Run
+```
+
+This triggers `workflow_dispatch` to test the build process without publishing.
+
+### Troubleshooting
+
+#### GitHub release failed with status: 403
+
+✅ **FIXED!** The workflow now has proper permissions:
+
+- `contents: write` - Creates releases
+- `pull-requests: read` - Generates release notes
+
+#### test (3.11) failed
+
+✅ **FIXED!** Tests now install `[extract]` dependencies, so all LangChain packages are available.
+
+#### Tests fail but I want to publish anyway
+
+❌ **Not possible!** The publish workflow requires tests to pass first. This is by design - fix the tests before releasing.
+
+#### How do I test without creating a tag?
+
+✅ Push to `main` or `dev` branch - tests run automatically. Or use `workflow_dispatch` button in GitHub Actions.
 
 ### Manual Release (Emergency Only)
 
@@ -220,6 +262,9 @@ twine check dist/*
 
 # Upload to PyPI (requires PYPI_API_TOKEN)
 twine upload dist/*
+
+# Create GitHub release (requires gh CLI)
+gh release create v0.3.0 --generate-notes dist/*
 ```
 
 > **Note:** This is rarely needed. GitHub Actions is the recommended way to publish.

@@ -6,8 +6,17 @@ on:
     tags:
       - 'v*.*.*'  # Trigger on version tags like v0.1.0
 
+permissions:
+  contents: write      # Required for creating GitHub releases
+  pull-requests: read  # Required for generating release notes
+
 jobs:
+  # Run tests before publishing
+  test:
+    uses: ./.github/workflows/test.yml
+
   build-and-publish:
+    needs: test  # Only publish if tests pass
     runs-on: ubuntu-latest
     environment: release  # Use GitHub environment for protection
 
