@@ -9,7 +9,7 @@ Simple cheatsheet for developers new to this project.
 ```bash
 # Clone and setup
 git clone https://github.com/GAIK-project/gaik-toolkit.git
-cd gaik-toolkit/gaik-py
+cd gaik-toolkit/packages/python/gaik
 
 # Create virtual environment and install
 python -m venv .venv
@@ -44,10 +44,10 @@ pip install -e .[vision]
 ### Project Module Structure
 
 ```text
-gaik-py/src/gaik/
-├── extract/          # Text/structured data extraction
-├── parsers/          # Vision, PDF, and other parsers
-├── providers/        # LLM provider integrations
+packages/python/gaik/src/gaik/
+├── extract/          # Text/structured data extraction (+ tests)
+├── parsers/          # Vision, PDF, and other parsers (+ tests)
+├── providers/        # LLM provider integrations (+ tests)
 └── [your-feature]/   # New standalone modules (e.g., audio, video)
 ```
 
@@ -55,18 +55,18 @@ gaik-py/src/gaik/
 
 For completely new capabilities (e.g., audio transcription, video processing) that don't fit into existing modules:
 
-1. **Create your module** → `gaik-py/src/gaik/[feature-name]/`
+1. **Create your module** → `packages/python/gaik/src/gaik/[feature-name]/`
 
    Example: Whisper audio transcription
 
    ```text
-   gaik-py/src/gaik/audio/
+   packages/python/gaik/src/gaik/audio/
    ├── __init__.py
    ├── transcriber.py
    └── utils.py
    ```
 
-2. **Add dependencies** → `gaik-py/pyproject.toml`
+2. **Add dependencies** → `packages/python/gaik/pyproject.toml`
 
    Create a new optional dependency group:
 
@@ -79,7 +79,7 @@ For completely new capabilities (e.g., audio transcription, video processing) th
    all = ["gaik[extract,vision,audio]"]  # Update all group
    ```
 
-3. **Export public API** → `gaik-py/src/gaik/__init__.py`
+3. **Export public API** → `packages/python/gaik/src/gaik/__init__.py`
 
    ```python
    from .audio import AudioTranscriber
@@ -93,9 +93,9 @@ For completely new capabilities (e.g., audio transcription, video processing) th
 
 For features that fit into existing modules:
 
-- **Add parser:** `gaik-py/src/gaik/parsers/your_parser.py`
-- **Add extractor:** `gaik-py/src/gaik/extract/your_extractor.py`
-- **Add LLM provider:** `gaik-py/src/gaik/providers/your_provider.py` (see existing providers for examples)
+- **Add parser:** `packages/python/gaik/src/gaik/parsers/your_parser.py`
+- **Add extractor:** `packages/python/gaik/src/gaik/extract/your_extractor.py`
+- **Add LLM provider:** `packages/python/gaik/src/gaik/providers/your_provider.py` (see existing providers for examples)
 
 ---
 
@@ -119,7 +119,7 @@ For features that fit into existing modules:
 
 ### Where to Add Dependencies
 
-**Location:** `gaik-py/pyproject.toml` under `[project.optional-dependencies]`
+**Location:** `packages/python/gaik/pyproject.toml` under `[project.optional-dependencies]`
 
 **For extract providers:**
 
@@ -151,7 +151,7 @@ vision = [
 ### Running Tests Locally
 
 ```bash
-cd gaik-py
+cd packages/python/gaik
 
 # Install dev dependencies (includes pytest)
 pip install -e ".[extract,dev]"
@@ -163,7 +163,7 @@ pytest
 pytest --cov=gaik --cov-report=term
 
 # Run specific test file
-pytest tests/test_extract.py
+pytest src/gaik/extract/tests/test_extract.py
 
 # Run tests in verbose mode
 pytest -v
@@ -171,12 +171,12 @@ pytest -v
 
 ### Writing Tests
 
-**Add unit tests to `gaik-py/tests/`:**
+**Add unit tests next to the code they cover** inside `src/gaik/<feature>/tests/`:
 
 - Use pytest framework
 - Follow naming: `test_*.py` or `*_test.py`
 - Mock external API calls (no real API keys in tests)
-- See `tests/test_extract.py` for examples
+- See `src/gaik/extract/tests/test_extract.py` for examples
 
 **Example test:**
 
@@ -199,14 +199,18 @@ def test_field_spec_creation():
 ### Test Structure
 
 ```text
-gaik-py/
-├── tests/              # Unit tests (pytest)
-│   ├── conftest.py    # Shared fixtures
-│   └── test_*.py      # Test files
-├── scripts/           # CI/CD verification scripts
-│   ├── verify_installation.py
-│   └── validate_version.py
-└── examples/          # Usage examples
+packages/python/gaik/
+├── src/gaik/
+│   ├── extract/
+│   │   ├── ...
+│   │   └── tests/          # Module-specific tests
+│   │       ├── conftest.py
+│   │       └── test_*.py
+│   └── <other modules>/
+│       └── tests/
+├── scripts/
+│   └── verify_installation.py
+└── README.md
 ```
 
 ### Code Quality
@@ -230,54 +234,30 @@ ruff check --fix src/gaik/
 
 ## 🚀 Release Process (Maintainers Only)
 
-**GitHub Actions handles everything automatically!**
+**GitHub Actions + `setuptools_scm` manage releases automatically.**
 
 ### Automated Release Steps
 
-1. **Test first!** → Push changes to `main` or `dev` branch
+1. **Make sure main/dev is green.** Tests run on every push via `Run Tests` workflow.
 
-   ```bash
-   git add .
-   git commit -m "Your changes"
-   git push origin main
-   ```
-
-   **Check tests pass:** GitHub → Actions → "Run Tests" workflow
-
-   - Tests run automatically on every push to main/dev
-   - Tests must pass before you can release
-   - Tests now include all [extract] dependencies
-
-2. **Update version** → Edit `gaik-py/pyproject.toml`
-
-   ```toml
-   version = "0.3.0"  # Bump version number
-   ```
-
-3. **Commit version bump**
-
-   ```bash
-   git add gaik-py/pyproject.toml
-   git commit -m "Bump to v0.3.0"
-   git push origin main
-   ```
-
-4. **Create and push git tag**
+2. **Create a semantic version tag** once changes are merged:
 
    ```bash
    git tag v0.3.0
    git push origin v0.3.0
    ```
 
-5. **Done!** 🎉 GitHub Actions automatically:
-   - ✅ Runs all tests first (Python 3.10, 3.11, 3.12)
-   - ✅ Only publishes if tests pass
-   - Builds the package (`python -m build`)
-   - Validates metadata (`twine check dist/*`)
-   - Publishes to PyPI (`twine upload dist/*`)
-   - Creates GitHub Release with notes
+   > Tag format **must** be `vX.Y.Z`. The package version is derived from this tag.
 
-**Check progress:** GitHub → Actions tab → "Publish to Production PyPI" workflow
+3. **Done!** 🎉 The publish workflow will:
+   - ✅ Re-run the shared `Run Tests` workflow
+   - ✅ Build the package from `packages/python/gaik`
+   - ✅ Validate metadata with Twine
+   - ✅ Upload to PyPI
+   - ✅ Smoke-test `pip install gaik`
+   - ✅ Attach artifacts + GitHub Release notes
+
+**Monitor progress:** GitHub → Actions → "Publish to Production PyPI" workflow
 
 ### Testing Pipeline Without Release
 
@@ -311,33 +291,25 @@ This triggers `workflow_dispatch` to test the build process without publishing.
 
 ✅ Push to `main` or `dev` branch - tests run automatically. Or use `workflow_dispatch` button in GitHub Actions.
 
-#### Version validation failed: "Git tag v0.X.Y but pyproject.toml has 0.X.Z"
+#### Publish job fails with "No valid version" or similar
 
-❌ **Problem:** The tag points to an old commit before the version bump.
+❌ **Problem:** The tag name does not match `vX.Y.Z` or the commit you tagged is missing package artifacts.
 
-✅ **Fix:** Delete and recreate the tag on the correct commit:
+✅ **Fix:** Delete the incorrect tag locally/remotely and recreate it with the correct semantic version:
 
 ```bash
-# Delete old tag locally and remotely
-git tag -d v0.X.Y
-git push origin --delete v0.X.Y
-
-# Ensure your version bump commit is pushed
-git push origin main
-
-# Create tag on current commit (with version bump)
+git tag -d bad-tag
+git push origin --delete bad-tag
 git tag v0.X.Y
 git push origin v0.X.Y
 ```
-
-**Important:** Always commit and push the version bump BEFORE creating the tag!
 
 ### Manual Release (Emergency Only)
 
 If GitHub Actions fails, maintainers can publish manually:
 
 ```bash
-cd gaik-py
+cd packages/python/gaik
 
 # Build package
 python -m build
@@ -360,15 +332,13 @@ gh release create v0.3.0 --generate-notes dist/*
 
 ```text
 gaik-toolkit/
-├── gaik-py/                          # 📦 PyPI package (published)
-│   ├── src/gaik/                     # Source code
-│   │   ├── extract/                  # Data extraction module
-│   │   ├── parsers/                  # Vision/PDF parsing
-│   │   └── providers/                # LLM provider implementations
-│   ├── tests/                        # 🧪 Unit tests (pytest)
-│   ├── scripts/                      # 🔧 CI/CD verification scripts
-│   ├── pyproject.toml                # Package config & dependencies
-│   └── README.md                     # Package documentation
+├── packages/
+│   └── python/
+│       └── gaik/                     # 📦 PyPI package (published)
+│           ├── src/gaik/             # Source + co-located tests
+│           ├── scripts/              # 🔧 Verification helpers
+│           ├── pyproject.toml        # Package config & dependencies
+│           └── README.md             # Package documentation
 │
 ├── dev/                              # 🚧 Work in progress (not published)
 │   ├── experimental/                 # Experimental features
@@ -386,9 +356,9 @@ gaik-toolkit/
 
 **Where to add code:**
 
-- Production-ready code → `gaik-py/src/gaik/`
-- Unit tests → `gaik-py/tests/`
-- CI/CD scripts → `gaik-py/scripts/`
+- Production-ready code → `packages/python/gaik/src/gaik/`
+- Unit tests → `packages/python/gaik/src/gaik/**/tests/`
+- CI/CD scripts → `packages/python/gaik/scripts/`
 - Code in development → `dev/` (see [dev/README.md](dev/README.md))
 - Usage examples → `examples/`
 
@@ -397,4 +367,4 @@ gaik-toolkit/
 ## ❓ Questions?
 
 - **Issues**: [github.com/GAIK-project/gaik-toolkit/issues](https://github.com/GAIK-project/gaik-toolkit/issues)
-- **Documentation**: [gaik-py/README.md](gaik-py/README.md)
+- **Documentation**: [packages/python/gaik/README.md](packages/python/gaik/README.md)

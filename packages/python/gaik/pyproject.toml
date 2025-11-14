@@ -1,6 +1,6 @@
 [project]
 name = "gaik"
-version = "0.2.14"
+dynamic = ["version"]
 description = "General AI Kit - Reusable AI/ML components for Python"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -69,22 +69,47 @@ dev = [
     "pytest>=8.0",       # Test runner: pytest
     "pytest-cov>=4.1",   # Coverage reports (optional)
     "pytest-mock>=3.12", # Mock fixtures for testing
+    "tomli>=2.0.1",      # TOML parser for Python 3.10 tooling
+]
+
+# Continuous integration dependencies (dev + provider extras)
+ci = [
+    # Extraction extras
+    "langchain-core>=1.0.3",
+    "langchain-openai>=1.0.2",
+    "langchain-anthropic>=1.0.1",
+    "langchain-google-genai>=3.0.1",
+    # Development/test tooling
+    "ruff>=0.14.1",
+    "build>=1.0",
+    "twine>=4.0",
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "pytest-mock>=3.12",
+    "tomli>=2.0.1",
 ]
 
 [project.urls]
 Homepage = "https://gaik.ai/"
-Repository = "https://github.com/GAIK-project/toolkit-shared-components"
-Documentation = "https://github.com/GAIK-project/toolkit-shared-components/tree/main/gaik-py"
-Issues = "https://github.com/GAIK-project/toolkit-shared-components/issues"
+Repository = "https://github.com/GAIK-project/gaik-toolkit"
+Documentation = "https://github.com/GAIK-project/gaik-toolkit/tree/main/packages/python/gaik"
+Issues = "https://github.com/GAIK-project/gaik-toolkit/issues"
 
 # Build system configuration (not installed, used during `python -m build`)
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel", "setuptools-scm>=8.0"]
 build-backend = "setuptools.build_meta"
 
 # Source code location (not installed, directs setuptools behavior)
 [tool.setuptools.packages.find]
 where = ["src"]
+exclude = ["gaik.tests", "gaik.*.tests"]
+[tool.setuptools_scm]
+tag_regex = "^v(?P<version>\\d+\\.\\d+\\.\\d+)$"
+fallback_version = "0.0.0"
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+
 
 # Include type hints marker file (py.typed included in package)
 [tool.setuptools.package-data]
@@ -103,5 +128,5 @@ ignore = []
 
 # Pytest test runner configuration
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["src/gaik"]
 addopts = ["-v", "--strict-markers"]

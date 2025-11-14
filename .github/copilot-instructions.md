@@ -1,7 +1,7 @@
 **IMPORTANT:** Concise cheatsheet for AI agents. Keep current.
 
 ## Package Structure
-- Source: `gaik-py/src/gaik/`
+- Source: `packages/python/gaik/src/gaik/`
 - Modules: `extract/` (extraction API), `providers/` (LLM registry), `parsers/` (vision/PDF)
 - Published: [pypi.org/project/gaik](https://pypi.org/project/gaik/)
 
@@ -33,12 +33,12 @@ parser = VisionParser(config)
 
 ## Testing
 - Smoke test: `python examples/demo_anthropic.py`
-- Build: `cd gaik-py && python -m build && twine check dist/*`
-- CI: `environment: release` → version validation → PyPI publish → GitHub Release
+- Build: `cd packages/python/gaik && python -m build && twine check dist/*`
+- CI: `environment: release` → tests → PyPI publish → GitHub Release
 
 ## Publishing (see CONTRIBUTING.md Release section)
-1. Update `gaik-py/pyproject.toml` version
-2. Commit and tag: `git tag vX.Y.Z && git push origin main vX.Y.Z`
+1. Merge changes to main/dev
+2. Tag: `git tag vX.Y.Z && git push origin vX.Y.Z`
 3. GitHub Actions auto-publishes to PyPI
 4. Verify: `pip install gaik && python -c "import gaik; print(gaik.__version__)"`
 

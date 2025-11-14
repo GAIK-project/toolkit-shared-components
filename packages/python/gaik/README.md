@@ -256,8 +256,8 @@ get_openai_config(
 
 ## Resources
 
-- [GitHub Repository](https://github.com/GAIK-project/toolkit-shared-components)
-- [Examples Directory](https://github.com/GAIK-project/toolkit-shared-components/tree/main/examples)
+- [GitHub Repository](https://github.com/GAIK-project/gaik-toolkit)
+- [Examples Directory](https://github.com/GAIK-project/gaik-toolkit/tree/main/examples)
 - [LangChain Documentation](https://python.langchain.com/docs/how_to/structured_output/)
 - [Pydantic Documentation](https://docs.pydantic.dev/)
 

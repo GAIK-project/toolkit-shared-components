@@ -321,7 +321,7 @@ ModuleNotFoundError: No module named 'gaik'
 **Solution:** Install the package:
 
 ```bash
-cd gaik-py
+cd packages/python/gaik
 pip install -e .
 ```
 
@@ -331,7 +331,7 @@ pip install -e .
 
 1. **Start with extraction:** Run `demo_anthropic.py`
 2. **Try vision parsing:** Run `demo_vision_simple.py` (requires `gaik[vision]`)
-3. **Check main docs:** [../gaik-py/README.md](../gaik-py/README.md) for full API reference
+3. **Check main docs:** [../packages/python/gaik/README.md](../packages/python/gaik/README.md) for full API reference
 4. **Adapt to your needs:** Modify examples for your specific use case
 
 ---
@@ -339,7 +339,7 @@ pip install -e .
 ## Additional Resources
 
 - **Main README:** [../README.md](../README.md)
-- **Package Documentation:** [../gaik-py/README.md](../gaik-py/README.md)
+- **Package Documentation:** [../packages/python/gaik/README.md](../packages/python/gaik/README.md)
 - **Contributing & Release:** [../CONTRIBUTING.md](../CONTRIBUTING.md)
 - **Cheatsheet (Finnish):** [../docs/gaik-toolkit-cheatsheet.md](../docs/gaik-toolkit-cheatsheet.md)
 
@@ -347,7 +347,7 @@ pip install -e .
 
 ## Questions or Issues?
 
-- **GitHub Issues:** [github.com/GAIK-project/toolkit-shared-components/issues](https://github.com/GAIK-project/toolkit-shared-components/issues)
+- **GitHub Issues:** [github.com/GAIK-project/gaik-toolkit/issues](https://github.com/GAIK-project/gaik-toolkit/issues)
 - **Documentation:** Check the main README and package documentation
 
 ---

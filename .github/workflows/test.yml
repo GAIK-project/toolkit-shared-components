@@ -27,11 +27,8 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install package in editable mode
-      run: |
-        python -m pip install --upgrade pip
-        cd gaik-py
-        pip install -e ".[extract,dev]"  # Install with extract and dev dependencies for testing
+    - name: Run package-specific tests
+      run: python dev/scripts/run_python_package_tests.py
 
     - name: Test basic imports
       run: |
@@ -40,25 +37,20 @@ jobs:
         python -c "from gaik.providers import get_provider"
         echo "✅ All imports successful!"
 
-    - name: Run unit tests with pytest
-      working-directory: gaik-py
-      run: |
-        pytest tests/ -v --cov=gaik --cov-report=term --cov-report=xml
-
     - name: Run verification script
       run: |
         # Run installation verification (doesn't need API key)
-        python gaik-py/scripts/verify_installation.py
+        python packages/python/gaik/scripts/verify_installation.py
 
     - name: Install build dependencies
       run: pip install build twine
 
     - name: Build package
-      working-directory: gaik-py
+      working-directory: packages/python/gaik
       run: python -m build
 
     - name: Check package with twine
-      working-directory: gaik-py
+      working-directory: packages/python/gaik
       run: twine check dist/*
 
     - name: Upload build artifacts
@@ -66,5 +58,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-dist-package
-        path: gaik-py/dist/
+        path: packages/python/gaik/dist/
         retention-days: 3

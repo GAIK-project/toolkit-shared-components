@@ -48,7 +48,7 @@ extractor = SchemaExtractor(
 - Multi-provider support: OpenAI, Anthropic, Google, Azure
 - `SchemaExtractor` builds the schema automatically and returns clean Python objects
 - Easy provider switching with single parameter
-- Further examples live in [gaik-py/README.md](../gaik-py/README.md) and the [`examples/`](../examples/) directory
+- Further examples live in [packages/python/gaik/README.md](../packages/python/gaik/README.md) and the [`examples/`](../examples/) directory
 
 ## Environment variables
 

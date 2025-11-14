@@ -29,26 +29,21 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Validate version
-      run: |
-        TAG=${GITHUB_REF#refs/tags/}
-        python gaik-py/scripts/validate_version.py $TAG
-
     - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip
         pip install build twine
 
     - name: Build package
-      working-directory: gaik-py
+      working-directory: packages/python/gaik
       run: python -m build
 
     - name: Check package
-      working-directory: gaik-py
+      working-directory: packages/python/gaik
       run: twine check dist/*
 
     - name: Publish to PyPI
-      working-directory: gaik-py
+      working-directory: packages/python/gaik
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
@@ -64,13 +59,13 @@ jobs:
         pip install gaik
 
         # Run verification tests (skips optional dependencies)
-        python gaik-py/scripts/verify_installation.py
+        python packages/python/gaik/scripts/verify_installation.py
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: dist-package
-        path: gaik-py/dist/
+        path: packages/python/gaik/dist/
         retention-days: 7
 
     - name: Create GitHub Release
@@ -78,4 +73,4 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         generate_release_notes: true
-        files: gaik-py/dist/*
+        files: packages/python/gaik/dist/*

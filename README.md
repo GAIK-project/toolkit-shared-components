@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/gaik.svg)](https://pypi.org/project/gaik/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://github.com/GAIK-project/toolkit-shared-components/actions/workflows/test.yml/badge.svg)](https://github.com/GAIK-project/toolkit-shared-components/actions)
+[![Tests](https://github.com/GAIK-project/gaik-toolkit/actions/workflows/test.yml/badge.svg)](https://github.com/GAIK-project/gaik-toolkit/actions)
 
 Shared Python components for AI/ML projects - production-ready utilities for schema extraction with multi-provider LLM support (OpenAI, Anthropic, Azure, Google).
 
@@ -22,7 +22,7 @@ results = extractor.extract(["Alice is 25 years old"])
 print(results[0])  # {'name': 'Alice', 'age': 25}
 ```
 
-**Full documentation:** [gaik-py/README.md](gaik-py/README.md)
+**Full documentation:** [packages/python/gaik/README.md](packages/python/gaik/README.md)
 
 ---
 
@@ -38,15 +38,19 @@ print(results[0])  # {'name': 'Alice', 'age': 25}
 ## Repository Structure
 
 ```
-toolkit-shared-components/
-├── gaik-py/              # Python package (pip install gaik)
-│   ├── src/gaik/         # Source code
-│   │   ├── extract/      # Schema extraction
-│   │   ├── providers/    # LLM providers
-│   │   └── parsers/      # Vision/PDF parsing
-│   ├── tests/            # Unit tests (pytest)
-│   ├── scripts/          # CI/CD verification
-│   └── pyproject.toml    # Package config
+gaik-toolkit/
+├── packages/
+│   └── python/
+│       └── gaik/         # Python package (pip install gaik)
+│           ├── src/gaik/
+│           │   ├── extract/      # Schema extraction (+ unit tests)
+│           │   ├── providers/    # LLM providers (+ unit tests)
+│           │   └── parsers/      # Vision/PDF parsing (+ unit tests)
+│           ├── scripts/          # CI/CD verification helpers
+│           └── pyproject.toml    # Package config
+│   └── ts/
+│       └── README.md     # Placeholder for future TypeScript packages
+├── dev/                  # Experimental work before promotion
 ├── examples/             # Usage examples
 ├── docs/                 # Documentation
 └── .github/workflows/    # CI/CD (tests on push, publish on tag)
@@ -86,9 +90,9 @@ extractor = SchemaExtractor("...", provider="anthropic", api_key="your-key")
 ## Resources
 
 - **PyPI Package**: [pypi.org/project/gaik](https://pypi.org/project/gaik/)
-- **Full Documentation**: [gaik-py/README.md](gaik-py/README.md)
+- **Full Documentation**: [packages/python/gaik/README.md](packages/python/gaik/README.md)
 - **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Issues**: [GitHub Issues](https://github.com/GAIK-project/toolkit-shared-components/issues)
+- **Issues**: [GitHub Issues](https://github.com/GAIK-project/gaik-toolkit/issues)
 
 ---
 
