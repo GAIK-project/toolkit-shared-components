@@ -243,6 +243,7 @@ ruff check --fix src/gaik/
    ```
 
    **Check tests pass:** GitHub → Actions → "Run Tests" workflow
+
    - Tests run automatically on every push to main/dev
    - Tests must pass before you can release
    - Tests now include all [extract] dependencies
@@ -309,6 +310,27 @@ This triggers `workflow_dispatch` to test the build process without publishing.
 #### How do I test without creating a tag?
 
 ✅ Push to `main` or `dev` branch - tests run automatically. Or use `workflow_dispatch` button in GitHub Actions.
+
+#### Version validation failed: "Git tag v0.X.Y but pyproject.toml has 0.X.Z"
+
+❌ **Problem:** The tag points to an old commit before the version bump.
+
+✅ **Fix:** Delete and recreate the tag on the correct commit:
+
+```bash
+# Delete old tag locally and remotely
+git tag -d v0.X.Y
+git push origin --delete v0.X.Y
+
+# Ensure your version bump commit is pushed
+git push origin main
+
+# Create tag on current commit (with version bump)
+git tag v0.X.Y
+git push origin v0.X.Y
+```
+
+**Important:** Always commit and push the version bump BEFORE creating the tag!
 
 ### Manual Release (Emergency Only)
 
