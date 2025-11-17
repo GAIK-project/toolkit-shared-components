@@ -8,11 +8,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal, cast
 
+from langchain_core.language_models import BaseChatModel
+from pydantic import BaseModel
+
 from gaik.extract.models import ExtractionRequirements
 from gaik.extract.utils import create_extraction_model
 from gaik.providers import get_provider
-from langchain_core.language_models import BaseChatModel
-from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from gaik.extract.models import FieldSpec

@@ -1,6 +1,7 @@
 """Pytest configuration and shared fixtures for GAIK tests."""
 
 import pytest
+
 from gaik.extract import ExtractionRequirements, FieldSpec
 
 

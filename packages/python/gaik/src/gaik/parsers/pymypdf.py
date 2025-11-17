@@ -5,9 +5,9 @@ This module uses PyMuPDF (fitz) to extract text from PDF files without
 requiring external APIs or heavy ML models.
 """
 
-import os
 import logging
-from typing import Dict, Any
+import os
+from typing import Any
 
 try:
     import fitz  # PyMuPDF
@@ -43,9 +43,7 @@ class PyMuPDFParser:
             ImportError: If PyMuPDF is not installed
         """
         if not PYMUPDF_AVAILABLE:
-            raise ImportError(
-                "PyMuPDF is not available. Install it with: pip install gaik[parser]"
-            )
+            raise ImportError("PyMuPDF is not available. Install it with: pip install gaik[parser]")
 
         self.supported_extensions = [".pdf"]
 
@@ -63,7 +61,7 @@ class PyMuPDFParser:
         Raises:
             FileNotFoundError: If file does not exist
             Exception: If PDF parsing fails
-        """
+        """  # noqa: E501
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}")
 
@@ -75,7 +73,7 @@ class PyMuPDFParser:
                 text_content = ""
                 for page_num in range(doc.page_count):
                     page = doc[page_num]
-                    text_content += page.get_text()
+                    text_content += str(page.get_text())
                     text_content += "\n\n"  # Add page separator
             else:
                 # Structured extraction preserving layout
@@ -88,7 +86,7 @@ class PyMuPDFParser:
             logger.error(f"Error parsing PDF {file_path}: {e}")
             raise
 
-    def parse_document(self, file_path: str, use_markdown: bool = True) -> Dict[str, Any]:
+    def parse_document(self, file_path: str, use_markdown: bool = True) -> dict[str, Any]:
         """
         Parse a PDF document and return its content with metadata.
 
@@ -188,7 +186,7 @@ class PyMuPDFParser:
         return "\n".join(text_parts)
 
 
-def parse_pdf(file_path: str, use_markdown: bool = True, output_path: str = None) -> Dict[str, Any]:
+def parse_pdf(file_path: str, use_markdown: bool = True, output_path: str = None) -> dict[str, Any]:
     """
     Convenience function to parse a PDF with minimal setup.
 
