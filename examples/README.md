@@ -4,6 +4,25 @@ Quick examples to get started with GAIK.
 
 ## Setup
 
+### Option 1: Development Installation (recommended for testing)
+
+If you're developing or testing the latest code:
+
+```bash
+# From the repository root
+cd packages/python/gaik
+pip install -e ".[all]"
+
+# Set API keys (choose what you need)
+export OPENAI_API_KEY='sk-...'           # OpenAI
+export ANTHROPIC_API_KEY='sk-ant-...'   # Anthropic
+export GOOGLE_API_KEY='...'              # Google
+```
+
+### Option 2: Install from PyPI
+
+For stable releases:
+
 ```bash
 # Install package
 pip install gaik[extract]
