@@ -49,7 +49,8 @@ gaik-toolkit/
 │   │   └── parsers/       # Vision/PDF parsing
 │   └── pyproject.toml
 ├── examples/              # Usage examples
-└── docs/                  # Documentation
+├── scripts/               # CI/build scripts
+└── .github/workflows/     # CI/CD
 ```
 
 ## License

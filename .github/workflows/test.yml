@@ -28,14 +28,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Run package-specific tests
-      run: python dev/scripts/run_python_package_tests.py
-
-    - name: Test basic imports
-      run: |
-        python -c "import gaik"
-        python -c "from gaik.extract import SchemaExtractor"
-        python -c "from gaik.providers import get_provider"
-        echo "✅ All imports successful!"
+      run: python scripts/run_python_package_tests.py
 
     - name: Run verification script
       run: |

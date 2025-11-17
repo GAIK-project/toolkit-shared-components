@@ -136,6 +136,7 @@ gaik-toolkit/
 │   ├── parsers/                    # Parsers + tests
 │   └── providers/                  # LLM providers + tests
 ├── examples/                       # Usage examples
+├── scripts/                        # CI/build scripts
 └── .github/workflows/              # CI/CD
 ```
 
