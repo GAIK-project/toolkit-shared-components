@@ -1,67 +1,52 @@
 # Examples
 
-Quick examples to get started with GAIK.
+Quick start examples for GAIK toolkit.
 
-## Setup
-
-### Option 1: Development Installation (recommended for testing)
-
-If you're developing or testing the latest code:
+## Installation
 
 ```bash
-# From the repository root
+# Install from PyPI
+pip install gaik[all]
+
+# Or for development
 cd packages/python/gaik
 pip install -e ".[all]"
 
+# If using UV (recommended)
+uv pip install gaik[all]
+```
+
+## Environment Variables
+
+```bash
 # Set API keys (choose what you need)
-export OPENAI_API_KEY='sk-...'           # OpenAI
-export ANTHROPIC_API_KEY='sk-ant-...'   # Anthropic
-export GOOGLE_API_KEY='...'              # Google
+export OPENAI_API_KEY='sk-...'
+export ANTHROPIC_API_KEY='sk-ant-...'
+export GOOGLE_API_KEY='...'
 ```
 
-### Option 2: Install from PyPI
+## Usage
 
-For stable releases:
-
-```bash
-# Install package
-pip install gaik[extract]
-
-# For vision/PDF parsing
-pip install gaik[parser]
-
-# Set API key (choose one)
-export OPENAI_API_KEY='sk-...'           # OpenAI
-export ANTHROPIC_API_KEY='sk-ant-...'   # Anthropic
-export GOOGLE_API_KEY='...'              # Google
-```
-
-## Running Examples
-
-### Extraction
+### Structured Data Extraction
 
 ```bash
+# Using UV
+uv run python examples/extract/demo_anthropic.py
+
+# Or with activated venv
 python examples/extract/demo_anthropic.py
 ```
 
-### Vision/PDF Parsing
+### PDF to Markdown Parsing
 
 ```bash
-# Simple demo
-python examples/vision/demo_vision_simple.py
+# Using UV
+uv run python examples/parsers/demo_vision_simple.py
 
-# CLI tool
-python examples/vision/demo_vision_parser.py your-file.pdf
+# Or with activated venv
+python examples/parsers/demo_vision_simple.py
 ```
 
-## Available Examples
+## Documentation
 
-| Category | File | Description |
-|----------|------|-------------|
-| Extract | `extract/demo_anthropic.py` | Structured data extraction demo |
-| Vision | `vision/demo_vision_simple.py` | Basic PDF to Markdown |
-| Vision | `vision/demo_vision_parser.py` | Advanced CLI tool |
-
-## Full Documentation
-
-See [packages/python/gaik/README.md](../packages/python/gaik/README.md) for complete API reference and detailed usage.
+See [packages/python/gaik](../packages/python/gaik) for full API documentation.
