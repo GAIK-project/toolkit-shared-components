@@ -16,13 +16,45 @@ packages/python/gaik/src/gaik/
 └── [your-feature]/   # New standalone modules (e.g., audio, video)
 ```
 
-### Add a New Standalone Feature
+### Extend Existing Module
 
-For completely new capabilities (e.g., audio transcription, video processing) that don't fit into existing modules:
+Add new functionality to existing modules (e.g., `extract/`, `parsers/`, `providers/`).
 
-1. **Create your module** → `packages/python/gaik/src/gaik/[feature-name]/`
+#### Example: Add a new parser to `parsers/`
 
-   Example: Whisper audio transcription
+1. **Create parser file** → `packages/python/gaik/src/gaik/parsers/your_parser.py`
+
+2. **Export in module** → [src/gaik/parsers/\_\_init\_\_.py](packages/python/gaik/src/gaik/parsers/__init__.py)
+
+   ```python
+   from .your_parser import YourParser
+   __all__ = [..., "YourParser"]
+   ```
+
+3. **Add dependencies** → [pyproject.toml](packages/python/gaik/pyproject.toml)
+
+   Add to existing `[parser]` group (NOT a new group):
+
+   ```toml
+   [project.optional-dependencies]
+   parser = [
+       "openai>=2.7",
+       "PyMuPDF>=1.23.0",
+       "your-new-dependency>=1.0.0",  # Add here
+   ]
+   ```
+
+4. **Add tests** _(recommended)_ → `packages/python/gaik/src/gaik/parsers/tests/test_your_parser.py`
+
+5. **Add example** _(recommended)_ → `examples/parsers/demo_your_parser.py`
+
+### Add New Standalone Feature
+
+Create entirely new module for capabilities that don't fit existing modules (e.g., audio, video).
+
+#### Example: Audio transcription module
+
+1. **Create module** → `packages/python/gaik/src/gaik/audio/`
 
    ```text
    packages/python/gaik/src/gaik/audio/
@@ -33,7 +65,7 @@ For completely new capabilities (e.g., audio transcription, video processing) th
 
 2. **Add dependencies** → [pyproject.toml](packages/python/gaik/pyproject.toml)
 
-   Create a new optional dependency group:
+   Create NEW optional dependency group:
 
    ```toml
    [project.optional-dependencies]
@@ -41,7 +73,7 @@ For completely new capabilities (e.g., audio transcription, video processing) th
        "openai-whisper>=1.0.0",
        "torch>=2.0.0",
    ]
-   all = ["gaik[extract,vision,audio]"]  # Update all group
+   all = ["gaik[extract,parser,audio]"]  # Update all group
    ```
 
 3. **Export public API** → [src/gaik/\_\_init\_\_.py](packages/python/gaik/src/gaik/__init__.py)
@@ -50,21 +82,13 @@ For completely new capabilities (e.g., audio transcription, video processing) th
    from .audio import AudioTranscriber
    ```
 
-4. **Add examples** → [examples/](examples/)
+4. **Add tests** _(recommended)_ → `packages/python/gaik/src/gaik/audio/tests/`
 
-   Include README and usage examples
+5. **Add examples** _(recommended)_ → `examples/audio/` with README
 
-### Add a New Parser
+## Testing (Optional, but Recommended)
 
-1. Create `packages/python/gaik/src/gaik/parsers/your_parser.py`
-2. Export in [src/gaik/parsers/\_\_init\_\_.py](packages/python/gaik/src/gaik/parsers/__init__.py)
-3. Add dependencies to [pyproject.toml](packages/python/gaik/pyproject.toml) under `[project.optional-dependencies]`
-4. Add tests in `packages/python/gaik/src/gaik/parsers/tests/test_your_parser.py`
-5. Add example in [examples/parsers/](examples/parsers/)
-
-See existing parsers for reference.
-
-## Testing
+Tests and linting are automatically run by GitHub Actions on every push. Local testing is optional but helps catch issues early.
 
 **Tests go in:** `packages/python/gaik/src/gaik/<module>/tests/`
 
@@ -85,7 +109,12 @@ git tag v0.3.0              # Must be vX.Y.Z format
 git push origin v0.3.0      # Triggers GitHub Actions
 ```
 
-GitHub Actions auto-publishes to PyPI.
+**GitHub Actions automatically:**
+
+- Runs all tests
+- Lints and formats code
+- Builds the package
+- Publishes to PyPI
 
 ## Project Structure
 
@@ -106,8 +135,13 @@ flowchart LR
     A[Code Changes] --> B[git commit & push]
     B --> C[git tag v0.X.Y]
     C --> D[git push tag]
-    D --> E[GitHub Actions]
-    E --> F[Tests]
-    F --> G[Build]
-    G --> H[PyPI]
+    D --> E[GitHub Actions CI/CD]
+    E --> F[Automated Tests]
+    F --> G[Build Package]
+    G --> H[Publish to PyPI]
+
+    style E fill:#f9f,stroke:#333
+    style F fill:#bbf,stroke:#333
+    style G fill:#bbf,stroke:#333
+    style H fill:#bfb,stroke:#333
 ```
