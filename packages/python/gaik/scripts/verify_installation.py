@@ -4,49 +4,63 @@
 from __future__ import annotations
 
 from gaik import __version__
-from gaik.extract import (ExtractionRequirements, FieldSpec,
-                          create_extraction_model)
-from gaik.providers import PROVIDERS, get_provider
 
 
 def run_checks() -> None:
     print(f"gaik version detected: {__version__}")
 
-    # Validate Pydantic models can be constructed
-    field_name = FieldSpec(
-        field_name="name",
-        field_type="str",
-        description="Person name",
-        required=True,
-    )
-    field_age = FieldSpec(
-        field_name="age",
-        field_type="int",
-        description="Person age",
-        required=False,
-    )
+    # Test optional extract module if available
+    try:
+        from gaik.extract import (ExtractionRequirements, FieldSpec,
+                                  create_extraction_model)
+        from gaik.providers import PROVIDERS, get_provider
 
-    requirements = ExtractionRequirements(
-        use_case_name="InstallSmokeTest",
-        fields=[field_name, field_age],
-    )
+        # Validate Pydantic models can be constructed
+        field_name = FieldSpec(
+            field_name="name",
+            field_type="str",
+            description="Person name",
+            required=True,
+        )
+        field_age = FieldSpec(
+            field_name="age",
+            field_type="int",
+            description="Person age",
+            required=False,
+        )
 
-    model = create_extraction_model(requirements)
-    instance = model(name="Test User", age=30)
-    assert instance.name == "Test User"
-    assert instance.age == 30
+        requirements = ExtractionRequirements(
+            use_case_name="InstallSmokeTest",
+            fields=[field_name, field_age],
+        )
 
-    # Provider registry sanity check
-    expected = {"openai", "anthropic", "google", "azure"}
-    missing = expected.difference(PROVIDERS)
-    if missing:
-        raise RuntimeError(f"Provider registry missing entries: {sorted(missing)}")
+        model = create_extraction_model(requirements)
+        instance = model(name="Test User", age=30)
+        assert instance.name == "Test User"
+        assert instance.age == 30
 
-    provider = get_provider("openai")
-    if not hasattr(provider, "create_chat_model"):
-        raise RuntimeError("Provider object missing required API")
+        # Provider registry sanity check
+        expected = {"openai", "anthropic", "google", "azure"}
+        missing = expected.difference(PROVIDERS)
+        if missing:
+            raise RuntimeError(f"Provider registry missing entries: {sorted(missing)}")
 
-    print("✅ verify_installation checks passed")
+        provider = get_provider("openai")
+        if not hasattr(provider, "create_chat_model"):
+            raise RuntimeError("Provider object missing required API")
+
+        print("✅ extract module verification passed")
+    except ImportError as e:
+        print(f"⚠️  extract module skipped (optional dependencies not installed): {e}")
+
+    # Test optional parser module if available
+    try:
+        from gaik.parsers import VisionParser, PyMuPDFParser
+        print("✅ parser module verification passed")
+    except ImportError as e:
+        print(f"⚠️  parser module skipped (optional dependencies not installed): {e}")
+
+    print("✅ Core gaik installation verified")
 
 
 if __name__ == "__main__":
