@@ -49,18 +49,18 @@ def run_checks() -> None:
         if not hasattr(provider, "create_chat_model"):
             raise RuntimeError("Provider object missing required API")
 
-        print("✅ extract module verification passed")
+        print("[OK] extract module verification passed")
     except ImportError as e:
-        print(f"⚠️  extract module skipped (optional dependencies not installed): {e}")
+        print(f"[SKIP] extract module skipped (optional dependencies not installed): {e}")
 
     # Test optional parser module if available
     try:
         from gaik.parsers import VisionParser, PyMuPDFParser
-        print("✅ parser module verification passed")
+        print("[OK] parser module verification passed")
     except ImportError as e:
-        print(f"⚠️  parser module skipped (optional dependencies not installed): {e}")
+        print(f"[SKIP] parser module skipped (optional dependencies not installed): {e}")
 
-    print("✅ Core gaik installation verified")
+    print("[OK] Core gaik installation verified")
 
 
 if __name__ == "__main__":
