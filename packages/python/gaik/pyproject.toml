@@ -45,20 +45,20 @@ extract = [
     "langchain-google-genai>=3.0.1",
 ]
 
-# Vision/PDF parsing with OpenAI or Azure OpenAI
-vision = [
+# Document parsing (PDF, images, etc.)
+parser = [
     # Required to call OpenAI or Azure OpenAI vision endpoints
     "openai>=2.7",
-    # Local PDF/image utilities
-    "pdf2image>=1.17.0",
-    "pillow>=10.0.0",
+    # PDF parsing and image conversion (no Pillow required)
+    "PyMuPDF>=1.23.0",
+    # Environment variable loading
     "python-dotenv>=1.0.0",
 ]
 
 # All features
 all = [
     "gaik[extract]",
-    "gaik[vision]",
+    "gaik[parser]",
 ]
 
 # Development tooling for maintainers only (pip install -e ".[dev]")

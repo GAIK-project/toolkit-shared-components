@@ -1,175 +1,192 @@
 # GAIK - General AI Kit
 
-**Reusable AI/ML components for Python**
-
-Multi-provider AI toolkit for structured data extraction. Supports OpenAI, Anthropic Claude, Google Gemini, and Azure OpenAI.
-
-## Features
-
-### 🔍 Dynamic Data Extraction (`gaik.extract`)
-
-Extract structured data from unstructured text using LangChain's structured outputs:
-
-- ✅ **Multi-provider** - OpenAI, Anthropic, Azure, Google - easy switching
-- ✅ **Guaranteed structure** - API-enforced schema compliance
-- ✅ **Type-safe** - Full Pydantic validation
-- ✅ **No code generation** - Uses Pydantic's `create_model()`, no `eval()`
-- ✅ **Cost-effective** - Minimal API calls
-- ✅ **Simple & clean** - Easy to understand, minimal dependencies
-
-### 🖼️ Vision PDF Parsing (`gaik.parsers`)
-
-Convert PDF pages to Markdown with OpenAI or Azure OpenAI vision models:
-
-- ✅ **Single API surface** - Works with standard OpenAI or Azure deployments
-- ✅ **Optional extras** - Install with `pip install gaik[vision]`
-- ✅ **CLI ready** - See `examples/demo_vision_parser.py` for quick conversions
-- ✅ **Table-aware** - Keeps multi-page tables intact with optional cleanup
+Multi-provider AI toolkit for Python with structured data extraction and document parsing.
 
 ## Installation
 
 ```bash
-# Extract feature (all LLM providers: OpenAI, Anthropic, Google, Azure)
+# Extract features (OpenAI, Anthropic, Google, Azure)
 pip install gaik[extract]
 
-# Vision/PDF parsing (OpenAI or Azure OpenAI)
-pip install gaik[vision]
+# PDF parsing
+pip install gaik[parser]
 
 # All features
 pip install gaik[all]
-
-> **Heads-up:** `gaik[vision]` pulls in `pdf2image`, which requires the Poppler binaries on your system. Install Poppler with your package manager (`brew install poppler`, `apt-get install poppler-utils`, or [download for Windows](https://github.com/oschwartz10612/poppler-windows/releases)) before running the vision examples.
 ```
-
-**Why optional dependencies?**
-
-Extract users don't need vision libraries. Vision users don't need LangChain packages. This keeps installation lightweight and fast!
 
 ## Quick Start
 
-### Extract Data from Text
-
-**Install:** `pip install gaik[extract]`
-
-Set your API key (choose one):
-
-```bash
-export OPENAI_API_KEY='sk-...'              # OpenAI
-export ANTHROPIC_API_KEY='sk-ant-...'       # Anthropic
-export GOOGLE_API_KEY='...'                 # Google
-export AZURE_API_KEY='...'                  # Azure
-export AZURE_ENDPOINT='https://...'         # Azure (also required)
-```
-
-Then extract:
+### Extract Data
 
 ```python
 from gaik.extract import SchemaExtractor
 
-# Using default OpenAI provider
+# Set API key first: export OPENAI_API_KEY='sk-...'
 extractor = SchemaExtractor("Extract name and age from text")
 result = extractor.extract_one("Alice is 25 years old")
-print(result)
-# {'name': 'Alice', 'age': 25}
+print(result)  # {'name': 'Alice', 'age': 25}
 
 # Switch provider
 extractor = SchemaExtractor("Extract name and age", provider="anthropic")  # or "google", "azure"
 ```
 
-### Convert PDF to Markdown
-
-Requires: `pip install gaik[vision]`
-
-Set environment variables:
-
-```bash
-# For Azure OpenAI (all 3 required)
-export AZURE_API_KEY='your-api-key'
-export AZURE_ENDPOINT='https://your-resource.openai.azure.com/'
-export AZURE_DEPLOYMENT='gpt-4o'  # Your deployment name
-
-# OR for OpenAI
-export OPENAI_API_KEY='sk-...'
-```
-
-> **Note:** If using `.env` file, ensure all three Azure variables are set.
-
-Then convert:
+### Parse PDF to Markdown
 
 ```python
 from gaik.parsers import VisionParser, get_openai_config
 
-# Configure (automatically reads environment variables)
-config = get_openai_config(use_azure=True)  # or use_azure=False for OpenAI
+# Set environment: AZURE_API_KEY, AZURE_ENDPOINT, AZURE_DEPLOYMENT
+config = get_openai_config(use_azure=True)
 parser = VisionParser(config)
 
-# Convert PDF (returns list of Markdown pages)
 pages = parser.convert_pdf("invoice.pdf", clean_output=True)
-
-# Join into single document
 markdown = "\n\n".join(pages)
-print(markdown)
 ```
 
-**Common errors:**
-
-- `ValueError: Azure endpoint is required` → Check that `AZURE_ENDPOINT` is set
-- `ValueError: Azure deployment is required` → Check that `AZURE_DEPLOYMENT` is set
-
-### Batch Extraction
+### Fast Local PDF Parsing
 
 ```python
-from gaik.extract import dynamic_extraction_workflow
+from gaik.parsers import PyMuPDFParser
 
-description = """
-Extract from invoices:
-- Invoice number
-- Total amount in USD
-- Vendor name
-"""
+parser = PyMuPDFParser()
+result = parser.parse_document("document.pdf")
+print(result["text_content"])
+```
+
+## Features
+
+### 🔍 Structured Data Extraction
+
+- **Multi-provider** - OpenAI, Anthropic, Google, Azure
+- **Type-safe** - Full Pydantic validation
+- **API-enforced** - Guaranteed schema compliance
+- **Simple** - Natural language to structured data
+
+### 📄 Document Parsing
+
+- **VisionParser** - PDF to Markdown using vision models
+- **PyMuPDFParser** - Fast local text extraction
+- **No external binaries** - Pure Python dependencies
+
+## API Reference
+
+### Extraction
+
+```python
+SchemaExtractor(
+    user_description: str,
+    provider: Literal["openai", "anthropic", "google", "azure"] = "openai",
+    model: str | None = None,
+    api_key: str | None = None,
+)
+```
+
+**Methods:**
+- `extract_one(text: str) -> dict` - Extract from single text
+- `extract(texts: list[str]) -> list[dict]` - Batch extraction
+- `field_names` - List of field names
+- `model` - Generated Pydantic model
+
+### Vision Parser
+
+```python
+VisionParser(
+    config: OpenAIConfig,
+    custom_prompt: str | None = None,
+    use_context: bool = True,
+    max_tokens: int = 16_000,
+)
+```
+
+**Methods:**
+- `convert_pdf(pdf_path: str, dpi: int = 200, clean_output: bool = True) -> list[str]`
+- `save_markdown(pages: list[str], output_path: str)`
+
+**Config Helper:**
+```python
+get_openai_config(use_azure: bool = True) -> OpenAIConfig
+```
+
+### PyMuPDF Parser
+
+```python
+PyMuPDFParser()
+```
+
+**Methods:**
+- `parse_document(file_path: str) -> dict` - Extract text and metadata
+
+## Environment Variables
+
+| Provider | Variables |
+|----------|-----------|
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| Google | `GOOGLE_API_KEY` |
+| Azure | `AZURE_API_KEY`, `AZURE_ENDPOINT`, `AZURE_DEPLOYMENT` |
+
+## Default Models
+
+| Provider | Model |
+|----------|-------|
+| OpenAI | `gpt-4.1` |
+| Anthropic | `claude-sonnet-4-5-20250929` |
+| Google | `gemini-2.5-flash` |
+| Azure | User's deployment |
+
+## Batch Processing
+
+```python
+extractor = SchemaExtractor("""
+Extract:
+- invoice_number: Invoice ID
+- amount: Total in USD
+- vendor: Company name
+""")
 
 documents = [
     "Invoice #12345 from Acme Corp. Total: $1,500",
     "INV-67890, Supplier: TechCo, Amount: $2,750"
 ]
 
-# Use any provider
-results = dynamic_extraction_workflow(
-    description,
-    documents,
-    provider="openai"  # or "anthropic", "google", "azure"
-)
-
+results = extractor.extract(documents)
 for result in results:
-    print(f"Invoice: {result['invoice_number']}, Amount: ${result['total_amount']}")
+    print(f"Invoice: {result['invoice_number']}, Amount: ${result['amount']}")
 ```
 
-### 4. Reusable Extractor (Recommended)
+## Schema Inspection
 
 ```python
-from gaik.extract import SchemaExtractor
+extractor = SchemaExtractor("Extract name and age")
 
-# Create extractor once
-extractor = SchemaExtractor("""
-Extract from project reports:
-- Project title
-- Lead institution
-- Total funding in euros
-- List of partner countries
-""")
+# Field names
+print(extractor.field_names)  # ['name', 'age']
 
-# Reuse for multiple batches
-batch1_results = extractor.extract(documents_batch1)
-batch2_results = extractor.extract(documents_batch2)
+# JSON schema
+schema = extractor.model.model_json_schema()
 
-# Inspect the schema
-print(f"Fields: {extractor.field_names}")
-# ['project_title', 'lead_institution', 'total_funding', 'partner_countries']
+# Field specs
+for field in extractor.fields:
+    print(f"{field.field_name}: {field.field_type}")
 ```
 
-### 5. Schema-Only Generation
+## Advanced Usage
 
-Generate Pydantic schemas without extraction:
+### Custom Prompt for Vision Parser
+
+```python
+custom_prompt = """
+Convert document to markdown:
+- Preserve all tables
+- Include headers and footers
+- Maintain layout structure
+"""
+
+parser = VisionParser(config, custom_prompt=custom_prompt)
+```
+
+### Pre-defined Schema
 
 ```python
 from gaik.extract import FieldSpec, ExtractionRequirements, create_extraction_model
@@ -177,90 +194,21 @@ from gaik.extract import FieldSpec, ExtractionRequirements, create_extraction_mo
 requirements = ExtractionRequirements(
     use_case_name="Invoice",
     fields=[
-        FieldSpec(
-            field_name="invoice_number",
-            field_type="str",
-            description="Invoice identifier",
-            required=True
-        ),
-        FieldSpec(
-            field_name="amount",
-            field_type="float",
-            description="Total amount",
-            required=True
-        )
+        FieldSpec("invoice_number", "str", "Invoice ID", required=True),
+        FieldSpec("amount", "float", "Total amount", required=True),
     ]
 )
 
-# Create Pydantic model
 InvoiceModel = create_extraction_model(requirements)
-schema = InvoiceModel.model_json_schema()
+extractor = SchemaExtractor(requirements=requirements)
 ```
-
-## API Reference
-
-### Extraction API
-
-| Function/Class                  | Purpose                                           |
-| ------------------------------- | ------------------------------------------------- |
-| `SchemaExtractor`               | Reusable extractor with provider selection        |
-| `dynamic_extraction_workflow()` | One-shot extraction from natural language         |
-| `create_extraction_model()`     | Generate Pydantic model from field specifications |
-| `FieldSpec`                     | Define a single extraction field                  |
-| `ExtractionRequirements`        | Collection of field specifications                |
-
-### Vision Parser API
-
-| Function/Class        | Purpose                                    |
-| --------------------- | ------------------------------------------ |
-| `VisionParser`        | PDF to Markdown converter using vision LLM |
-| `get_openai_config()` | Helper to configure OpenAI/Azure API       |
-| `OpenAIConfig`        | Configuration dataclass for vision parser  |
-
-### Extraction Parameters
-
-```python
-SchemaExtractor(
-    user_description: str | None = None,  # Optional if requirements provided
-    provider: Literal["openai", "anthropic", "google", "azure"] = "openai",
-    model: str | None = None,             # Optional: override default model
-    api_key: str | None = None,           # Optional: override env variable
-    client: BaseChatModel | None = None,  # Optional: custom LangChain client
-    requirements: ExtractionRequirements | None = None  # Optional: pre-defined schema
-)
-```
-
-### Vision Parser Parameters
-
-```python
-VisionParser(config: OpenAIConfig)
-
-get_openai_config(
-    use_azure: bool = True,  # True for Azure, False for OpenAI
-) -> OpenAIConfig
-```
-
-**Environment variables (auto-detected):**
-
-- OpenAI: `OPENAI_API_KEY`
-- Azure: `AZURE_API_KEY` + `AZURE_ENDPOINT` + `AZURE_DEPLOYMENT` (optional: `AZURE_API_VERSION`)
-
-## Default Models
-
-| Provider  | Default Model                  |
-| --------- | ------------------------------ |
-| OpenAI    | `gpt-4.1`                      |
-| Anthropic | `claude-sonnet-4-5-20250929`   |
-| Google    | `gemini-2.5-flash`             |
-| Azure     | `gpt-4.1` (or your deployment) |
 
 ## Resources
 
-- [GitHub Repository](https://github.com/GAIK-project/gaik-toolkit)
-- [Examples Directory](https://github.com/GAIK-project/gaik-toolkit/tree/main/examples)
-- [LangChain Documentation](https://python.langchain.com/docs/how_to/structured_output/)
-- [Pydantic Documentation](https://docs.pydantic.dev/)
+- **Examples**: [examples/](../../examples/)
+- **Repository**: [github.com/GAIK-project/gaik-toolkit](https://github.com/GAIK-project/gaik-toolkit)
+- **Contributing**: [CONTRIBUTING.md](../../../CONTRIBUTING.md)
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT - see [LICENSE](../../../LICENSE)

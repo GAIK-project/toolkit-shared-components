@@ -1,7 +1,7 @@
 """Simple demonstration of VisionParser for PDF to Markdown conversion.
 
 This example shows how to use the vision parser with minimal setup.
-Requires: pip install gaik[vision]
+Requires: pip install gaik[parser]
 """
 
 from __future__ import annotations

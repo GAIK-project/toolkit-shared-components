@@ -16,9 +16,8 @@ from __future__ import annotations
 import base64
 import logging
 import os
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
-from io import BytesIO
 
 try:  # Optional dependency, documented via extra: gaik[vision]
     from dotenv import load_dotenv as _load_dotenv  # type: ignore
@@ -29,22 +28,15 @@ try:
     from openai import AzureOpenAI, OpenAI
 except ImportError as exc:  # pragma: no cover - optional dependency guard
     raise ImportError(
-        "VisionParser requires the 'openai' package. Install extras with 'pip install gaik[vision]'"
+        "VisionParser requires the 'openai' package. Install extras with 'pip install gaik[parser]'"
     ) from exc
 
 try:
-    from pdf2image import convert_from_path
+    import fitz  # PyMuPDF
 except ImportError as exc:  # pragma: no cover - optional dependency guard
     raise ImportError(
-        "VisionParser requires the 'pdf2image' package. Install extras with "
-        "'pip install gaik[vision]'"
-    ) from exc
-
-try:
-    from PIL import Image
-except ImportError as exc:  # pragma: no cover - optional dependency guard
-    raise ImportError(
-        "VisionParser requires the 'Pillow' package. Install extras with 'pip install gaik[vision]'"
+        "VisionParser requires the 'PyMuPDF' package. Install extras with "
+        "'pip install gaik[parser]'"
     ) from exc
 
 __all__ = ["OpenAIConfig", "VisionParser", "get_openai_config"]
@@ -141,14 +133,12 @@ class VisionParser:
         openai_config: OpenAIConfig,
         *,
         custom_prompt: str | None = None,
-        poppler_path: str | None = None,
         use_context: bool = True,
         max_tokens: int = 16_000,
         temperature: float = 0.0,
     ) -> None:
         self.config = openai_config
         self.custom_prompt = custom_prompt or self._default_prompt()
-        self.poppler_path = poppler_path
         self.use_context = use_context
         self.max_tokens = max_tokens
         self.temperature = temperature
@@ -234,20 +224,37 @@ class VisionParser:
         logger.debug("Initializing standard OpenAI client")
         return OpenAI(api_key=config.api_key)
 
-    def _pdf_to_images(self, pdf_path: str, *, dpi: int) -> Iterable[Image.Image]:
+    def _pdf_to_images(self, pdf_path: str, *, dpi: int) -> list[bytes]:
+        """Convert PDF pages to PNG image bytes using PyMuPDF.
+
+        Returns a list of PNG image data as bytes objects.
+        """
         logger.info("Converting PDF %s to images at %s DPI", pdf_path, dpi)
-        images = convert_from_path(pdf_path, dpi=dpi, poppler_path=self.poppler_path)
+        images: list[bytes] = []
+        doc = fitz.open(pdf_path)
+
+        # Calculate zoom factor from DPI (72 is the default DPI in PDFs)
+        zoom = dpi / 72.0
+        mat = fitz.Matrix(zoom, zoom)
+
+        for page_num in range(len(doc)):
+            # Render page to pixmap with specified DPI
+            pix = doc[page_num].get_pixmap(matrix=mat)
+            # Get PNG bytes directly
+            png_bytes = pix.tobytes("png")
+            images.append(png_bytes)
+
+        doc.close()
         logger.debug("Converted %s pages", len(images))
         return images
 
-    def _image_to_base64(self, image: Image.Image) -> str:
-        buffer = BytesIO()
-        image.save(buffer, format="PNG")
-        return base64.b64encode(buffer.getvalue()).decode("utf-8")
+    def _image_to_base64(self, image_bytes: bytes) -> str:
+        """Convert PNG image bytes to base64 string."""
+        return base64.b64encode(image_bytes).decode("utf-8")
 
     def _parse_image(
         self,
-        image: Image.Image,
+        image_bytes: bytes,
         *,
         page: int,
         previous_context: str | None,
@@ -261,7 +268,7 @@ class VisionParser:
             },
             {
                 "type": "image_url",
-                "image_url": {"url": f"data:image/png;base64,{self._image_to_base64(image)}"},
+                "image_url": {"url": f"data:image/png;base64,{self._image_to_base64(image_bytes)}"},
             },
         ]
 
@@ -318,23 +325,29 @@ class VisionParser:
     @staticmethod
     def _default_prompt() -> str:
         return (
-            "Please convert this document page to markdown format with the following "
-            "requirements:\n\n"
-            "1. Preserve ALL content exactly as it appears\n"
-            "2. Maintain the document structure and hierarchy\n"
-            "3. For tables:\n"
-            "   - Use proper markdown table syntax with | separators\n"
-            "   - If this page continues a table from the previous page, continue the table "
-            "seamlessly\n"
-            "   - Do NOT repeat table headers unless they appear on this page\n"
-            "   - Preserve multi-row cells by repeating content or using appropriate formatting\n"
-            "   - Maintain column alignment\n"
-            "   - Keep all headers and data intact\n"
-            "   - For item descriptions or notes within table cells, keep them in the same row\n"
-            "4. Preserve formatting like bold, italic, lists, etc.\n"
-            "5. For images or charts, describe them briefly in [Image: description] format\n"
-            "6. Maintain the reading order and layout flow\n"
-            "7. Keep numbers, dates, and special characters exactly as shown\n\n"
+            "Convert this document page to accurate markdown format. "
+            "Follow these rules STRICTLY:\n\n"
+            "**CRITICAL RULES:**\n"
+            "1. **NO HALLUCINATION**: Only output content that is actually visible on the page\n"
+            "2. **NO EMPTY ROWS**: Do NOT create empty table rows. If you see a table, "
+            "only include rows with actual data\n"
+            "3. **STOP when content ends**: When you reach the end of visible content, STOP. "
+            "Do not continue with empty rows\n\n"
+            "**Formatting Requirements:**\n"
+            "- Tables: Use markdown table syntax with | separators\n"
+            "- Multi-row cells: Keep item descriptions/notes in the same row as the item data\n"
+            "- Table continuations: If a table continues from a previous page, continue it "
+            "without repeating headers\n"
+            "- Preserve ALL visible text: headers, data, footers, page numbers, everything\n"
+            "- Keep numbers, dates, and text exactly as shown\n"
+            "- Maintain document structure and layout\n\n"
+            "**What to include:**\n"
+            "- All table data\n"
+            "- All text paragraphs\n"
+            "- Company information, addresses\n"
+            "- Terms and conditions\n"
+            "- Page numbers, dates\n"
+            "- Total amounts and summaries\n\n"
             "Return ONLY the markdown content, no explanations."
         )
 

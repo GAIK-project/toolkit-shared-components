@@ -33,8 +33,8 @@ pip install -e .[all]
 # Extract only (data extraction with all LLM providers)
 pip install -e .[extract]
 
-# Vision only (PDF parsing)
-pip install -e .[vision]
+# Parser only (PDF/document parsing)
+pip install -e .[parser]
 ```
 
 ---
@@ -135,7 +135,7 @@ Parsers convert documents (PDFs, images, etc.) to structured formats.
 
    ```toml
    [project.optional-dependencies]
-   vision = [
+   parser = [
        "your-library>=1.0.0",  # Add here
    ]
    ```
@@ -159,7 +159,7 @@ Parsers convert documents (PDFs, images, etc.) to structured formats.
 
    ```bash
    cd packages/python/gaik
-   pip install -e .[vision,dev]
+   pip install -e .[parser,dev]
    pytest src/gaik/parsers/tests/test_your_parser.py
    ```
 
@@ -182,13 +182,13 @@ Follow the `BaseProvider` interface in `packages/python/gaik/src/gaik/providers/
 | Group       | Purpose                                | Dependencies                                             |
 | ----------- | -------------------------------------- | -------------------------------------------------------- |
 | `[extract]` | Data extraction with all LLM providers | langchain-\* packages (OpenAI, Anthropic, Google, Azure) |
-| `[vision]`  | PDF/image parsing                      | openai, pdf2image, pillow                                |
-| `[all]`     | All features                           | extract + vision                                         |
+| `[parser]`  | PDF/image/document parsing             | openai, PyMuPDF, python-dotenv                           |
+| `[all]`     | All features                           | extract + parser                                         |
 
 ### Naming Convention
 
 - **LangChain providers:** `langchain-{provider}` (e.g., `langchain-openai`, `langchain-anthropic`)
-- **Vision tools:** `pdf2image`, `pillow`, `openai`
+- **Parser tools:** `openai`, `PyMuPDF`, `python-dotenv`
 - **Core utilities:** `pydantic` (always installed)
 
 ### Where to Add Dependencies
@@ -205,12 +205,12 @@ extract = [
 ]
 ```
 
-**For vision features:**
+**For parser features:**
 
 ```toml
-vision = [
+parser = [
     "openai>=2.7",
-    "your-vision-tool>=1.0.0",  # Add here
+    "your-parser-tool>=1.0.0",  # Add here
 ]
 ```
 
@@ -440,6 +440,30 @@ gaik-toolkit/
 - CI/CD scripts → `packages/python/gaik/scripts/`
 - Code in development → `dev/` (see [dev/README.md](dev/README.md))
 - Usage examples → `examples/`
+
+---
+
+## 📊 Release Pipeline Diagram
+
+```mermaid
+flowchart LR
+    A[👨‍💻 Developer<br/>Local Changes] -->|git add .<br/>git commit<br/>git push| B[📁 Git Repository<br/>main branch]
+    B -->|git tag v0.3.0<br/>git push origin v0.3.0| C[🏷️ Git Tag<br/>v0.3.0]
+    C -->|Triggers| D[⚙️ GitHub Actions<br/>publish.yml]
+    D -->|1. Run Tests| E[✅ Test Suite<br/>pytest]
+    E -->|2. Build Package| F[📦 Build<br/>python -m build]
+    F -->|3. Validate| G[🔍 Twine Check<br/>Metadata validation]
+    G -->|4. Upload| H[🐍 PyPI<br/>gaik v0.3.0]
+    H -->|pip install gaik| I[👥 End Users<br/>Install package]
+
+    style A fill:#e1f5ff
+    style C fill:#fff3cd
+    style D fill:#d4edda
+    style H fill:#f8d7da
+    style I fill:#e7e7e7
+```
+
+**Export to Excalidraw:** Copy the Mermaid code above and paste into Excalidraw's Mermaid import feature.
 
 ---
 

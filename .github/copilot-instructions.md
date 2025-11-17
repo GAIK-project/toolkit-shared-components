@@ -28,7 +28,7 @@ from gaik.extract import SchemaExtractor
 extractor = SchemaExtractor("Extract name and age", provider="anthropic")
 results = extractor.extract(["Alice is 25"])
 
-# Vision (requires: pip install gaik[vision])
+# Parser (requires: pip install gaik[parser])
 from gaik.parsers import VisionParser, get_openai_config
 config = get_openai_config(use_azure=True)  # or False for OpenAI
 parser = VisionParser(config)

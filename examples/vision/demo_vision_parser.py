@@ -47,11 +47,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional path to save the markdown output. Defaults to <pdf_name>.md next to the PDF.",
     )
     parser.add_argument(
-        "--poppler-path",
-        type=Path,
-        help="Optional path to the Poppler bin directory (required on Windows).",
-    )
-    parser.add_argument(
         "--openai",
         action="store_true",
         help="Use the standard OpenAI API instead of Azure OpenAI.",
@@ -101,7 +96,6 @@ def main() -> None:
     vision_parser = VisionParser(
         config,
         custom_prompt=custom_prompt,
-        poppler_path=str(args.poppler_path) if args.poppler_path else None,
     )
 
     markdown_pages = vision_parser.convert_pdf(
