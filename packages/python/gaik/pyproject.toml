@@ -105,8 +105,8 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 exclude = ["gaik.tests", "gaik.*.tests"]
 [tool.setuptools_scm]
+version_file = "src/gaik/_version.py"
 root = "../../.."
-write_to = "packages/python/gaik/src/gaik/_version.py"
 tag_regex = "^v(?P<version>\\d+\\.\\d+\\.\\d+)$"
 fallback_version = "0.0.0"
 version_scheme = "no-guess-dev"
