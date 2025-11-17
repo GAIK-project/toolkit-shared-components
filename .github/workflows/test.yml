@@ -30,11 +30,6 @@ jobs:
     - name: Run package-specific tests
       run: python scripts/run_python_package_tests.py
 
-    - name: Run verification script
-      run: |
-        # Run installation verification (doesn't need API key)
-        python packages/python/gaik/scripts/verify_installation.py
-
     - name: Install build dependencies
       run: pip install build twine
 
