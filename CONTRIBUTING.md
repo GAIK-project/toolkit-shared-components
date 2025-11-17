@@ -88,16 +88,24 @@ Create entirely new module for capabilities that don't fit existing modules (e.g
 
 ## Testing (Optional, but Recommended)
 
-Tests and linting are automatically run by GitHub Actions on every push. Local testing is optional but helps catch issues early.
+Tests are automatically run by GitHub Actions on every push. Local testing and linting are optional but help catch issues early.
 
 **Tests go in:** `packages/python/gaik/src/gaik/<module>/tests/`
 
 ```bash
 cd packages/python/gaik
+
+# Option 1: Using activated venv (recommended for monorepo)
+# Activate root venv first, then:
 pip install -e .[all,dev]
 pytest                      # Run all tests
 ruff check --fix .          # Lint
 ruff format .               # Format
+
+# Option 2: Using uv (creates project-local .venv)
+uv run pytest
+uv run ruff check .
+uv run ruff format .
 ```
 
 ## Release Process
@@ -111,10 +119,13 @@ git push origin v0.3.0      # Triggers GitHub Actions
 
 **GitHub Actions automatically:**
 
-- Runs all tests
-- Lints and formats code
+- Runs all tests (pytest)
 - Builds the package
+- Validates package (twine check)
 - Publishes to PyPI
+- Creates GitHub Release
+
+**Note:** Linting (ruff) is not enforced by CI. Run locally if needed.
 
 ## Project Structure
 
@@ -135,13 +146,17 @@ flowchart LR
     A[Code Changes] --> B[git commit & push]
     B --> C[git tag v0.X.Y]
     C --> D[git push tag]
-    D --> E[GitHub Actions CI/CD]
-    E --> F[Automated Tests]
+    D --> E[GitHub Actions]
+    E --> F[Run Tests]
     F --> G[Build Package]
-    G --> H[Publish to PyPI]
+    G --> H[Validate with Twine]
+    H --> I[Publish to PyPI]
+    I --> J[Create GitHub Release]
 
     style E fill:#f9f,stroke:#333
     style F fill:#bbf,stroke:#333
     style G fill:#bbf,stroke:#333
-    style H fill:#bfb,stroke:#333
+    style H fill:#bbf,stroke:#333
+    style I fill:#bfb,stroke:#333
+    style J fill:#bfb,stroke:#333
 ```
