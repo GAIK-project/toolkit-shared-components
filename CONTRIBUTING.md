@@ -314,13 +314,18 @@ ruff check --fix src/gaik/
 
 1. **Make sure main/dev is green.** Tests run on every push via `Run Tests` workflow.
 
-2. **Create a semantic version tag** once changes are merged:
+2. **Commit changes, then create tag:**
 
    ```bash
+   git add .
+   git commit -m "Your changes"
+   git push origin main
+
    git tag v0.3.0
    git push origin v0.3.0
    ```
 
+   > **Important:** Tag must be created AFTER committing. Tags attach to commits, not files.
    > Tag format **must** be `vX.Y.Z`. The package version is derived from this tag.
 
 3. **Done!** 🎉 The publish workflow will:
