@@ -38,7 +38,23 @@ print(result)  # {'name': 'Alice', 'age': 25}
 - **Examples**: [examples/](examples/)
 - **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Repository
+## How It Works
+
+```mermaid
+graph LR
+    A[GAIK Library<br/>Development] -->|Build & Release| B[PyPI<br/>gaik package]
+    B -->|pip install gaik| C[Your Project]
+    C -->|Simple Import| D[from gaik.extract import SchemaExtractor]
+
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#e8f5e9
+    style D fill:#f3e5f5
+```
+
+**No copy-paste needed** - Just install from PyPI and import. We maintain the library, you use it.
+
+## Repository Structure
 
 ```
 gaik-toolkit/
