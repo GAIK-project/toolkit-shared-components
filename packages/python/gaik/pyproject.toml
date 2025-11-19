@@ -38,11 +38,6 @@ dependencies = [
 [project.optional-dependencies]
 # Data extraction with all LLM providers (OpenAI, Anthropic, Google, Azure)
 extract = [
-    # LangChain core plus every supported chat provider
-    "langchain-core>=1.0.3",
-    "langchain-openai>=1.0.2",
-    "langchain-anthropic>=1.0.1",
-    "langchain-google-genai>=3.0.1",
 ]
 
 # Document parsing (PDF, images, etc.)
