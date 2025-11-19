@@ -48,6 +48,8 @@ parser = [
     "PyMuPDF>=1.23.0",
     # Environment variable loading
     "python-dotenv>=1.0.0",
+    "docling",
+    "psutil"
 ]
 
 # All features
