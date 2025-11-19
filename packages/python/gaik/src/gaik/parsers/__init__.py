@@ -1,9 +1,25 @@
-"""Reusable parsers for documents and images.
+"""Document and PDF Parsers
 
-This module provides:
-- VisionParser: Convert PDFs to Markdown using OpenAI vision models
-- PyMuPDFParser: Fast local PDF text extraction using PyMuPDF
-- DoclingParser: Advanced document parsing with OCR, table extraction, and multi-format support
+This module provides multiple PDF parsing options:
+
+Vision-based Parsing:
+    - VisionParser: Convert PDFs to Markdown using OpenAI vision models (GPT-4V)
+    - OpenAIConfig: Configuration for OpenAI/Azure OpenAI
+    - get_openai_config: Helper to get OpenAI configuration
+
+Local Parsing:
+    - PyMuPDFParser: Fast local PDF text extraction using PyMuPDF
+    - parse_pdf: Convenience function for PyMuPDF parsing
+
+Advanced Parsing:
+    - DoclingParser: Advanced document parsing with OCR, table extraction, and multi-format support
+    - parse_document: Convenience function for Docling parsing
+
+Example:
+    >>> from gaik.parsers import VisionParser, get_openai_config
+    >>> config = get_openai_config(use_azure=True)
+    >>> parser = VisionParser(openai_config=config, clean_output=True)
+    >>> pages = parser.convert_pdf("document.pdf")
 """
 
 from .docling import DoclingParser, parse_document
@@ -11,11 +27,14 @@ from .pymypdf import PyMuPDFParser, parse_pdf
 from .vision import OpenAIConfig, VisionParser, get_openai_config
 
 __all__ = [
-    "OpenAIConfig",
+    # Vision-based parsing
     "VisionParser",
+    "OpenAIConfig",
     "get_openai_config",
+    # Local parsing
     "PyMuPDFParser",
     "parse_pdf",
+    # Advanced parsing
     "DoclingParser",
     "parse_document",
 ]

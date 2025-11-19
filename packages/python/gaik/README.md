@@ -11,7 +11,7 @@ pip install gaik[extractor]
 # PDF parsing (vision-based + PyMuPDF)
 pip install gaik[parser]
 
-# All features
+# All features 
 pip install gaik[all]
 ```
 
